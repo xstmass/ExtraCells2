@@ -117,15 +117,34 @@ public class PartFluidTerminal extends PartECBase implements IGridTickable,
 			int capacity = FluidUtil.getCapacity(container);
 			IAEFluidStack result = monitor.extractItems(FluidUtil.createAEFluidStack(this.currentFluid, capacity), Actionable.SIMULATE, this.machineSource);
 			int proposedAmount = result == null ? 0 : (int) Math.min(capacity, result.getStackSize());
-			if(proposedAmount == 0)
+			// TODO gamerforEA code start
+			if (proposedAmount == 0)
 				return;
+			ItemStack containerCopy = container.copy();
+			// TODO gamerforEA code end
+
 			MutablePair<Integer, ItemStack> filledContainer = FluidUtil.fillStack(container, new FluidStack(this.currentFluid, proposedAmount));
-			if(filledContainer.getLeft() > proposedAmount)
+			if (filledContainer.getLeft() > proposedAmount)
 				return;
-			if (fillSecondSlot(filledContainer.getRight())) {
+
+			/* TODO gamerforEA code replace, old code:
+			if (this.fillSecondSlot(filledContainer.getRight()))
+			{
 				monitor.extractItems(FluidUtil.createAEFluidStack(this.currentFluid, filledContainer.getLeft()), Actionable.MODULATE, this.machineSource);
-				decreaseFirstSlot();
+				this.decreaseFirstSlot();
+			} */
+			if (this.simulateFillSecondSlot(filledContainer.getRight()))
+			{
+				container = containerCopy;
+				result = monitor.extractItems(FluidUtil.createAEFluidStack(this.currentFluid, filledContainer.getLeft()), Actionable.MODULATE, this.machineSource);
+				proposedAmount = result == null ? 0 : (int) Math.min(capacity, result.getStackSize());
+				filledContainer = FluidUtil.fillStack(container, new FluidStack(this.currentFluid, proposedAmount));
+				if (filledContainer.getLeft() > proposedAmount)
+					return;
+				if (this.fillSecondSlot(filledContainer.getRight()))
+					this.decreaseFirstSlot();
 			}
+			// TODO gamerforEA code end
 		} else {
 			FluidStack containerFluid = FluidUtil.getFluidFromContainer(container);
 			IAEFluidStack notInjected = monitor.injectItems(FluidUtil.createAEFluidStack(containerFluid), Actionable.SIMULATE, this.machineSource);
@@ -133,12 +152,38 @@ public class PartFluidTerminal extends PartECBase implements IGridTickable,
 				return;
 			MutablePair<Integer, ItemStack> drainedContainer = FluidUtil.drainStack(container, containerFluid);
 			ItemStack emptyContainer = drainedContainer.getRight();
-			if (emptyContainer == null || fillSecondSlot(emptyContainer)) {
+			/* TODO gamerforEA code replace, old code:
+			if (emptyContainer == null || this.fillSecondSlot(emptyContainer))
+			{
 				monitor.injectItems(FluidUtil.createAEFluidStack(containerFluid), Actionable.MODULATE, this.machineSource);
-				decreaseFirstSlot();
+				this.decreaseFirstSlot();
+			} */
+			if (emptyContainer == null || this.simulateFillSecondSlot(emptyContainer))
+			{
+				int amount = drainedContainer.getLeft();
+				if (amount > 0)
+				{
+					containerFluid.amount = amount;
+					if (monitor.injectItems(FluidUtil.createAEFluidStack(containerFluid), Actionable.SIMULATE, this.machineSource) == null && (emptyContainer == null || this.fillSecondSlot(emptyContainer)))
+					{
+						monitor.injectItems(FluidUtil.createAEFluidStack(containerFluid), Actionable.MODULATE, this.machineSource);
+						this.decreaseFirstSlot();
+					}
+				}
 			}
+			// TODO gamerforEA code end
 		}
 	}
+
+		// TODO gamerforEA code start
+	private boolean simulateFillSecondSlot(ItemStack itemStack)
+	{
+		if (itemStack == null)
+			return false;
+		ItemStack secondSlot = this.inventory.getStackInSlot(1);
+		return secondSlot == null || secondSlot.isItemEqual(itemStack) && ItemStack.areItemStackTagsEqual(itemStack, secondSlot);
+	}
+	// TODO gamerforEA code end
 
 	public boolean fillSecondSlot(ItemStack itemStack) {
 		if (itemStack == null)

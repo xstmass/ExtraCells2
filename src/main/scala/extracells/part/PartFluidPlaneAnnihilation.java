@@ -88,8 +88,18 @@ public class PartFluidPlaneAnnihilation extends PartECBase {
 
 		if (fluidBlock instanceof IFluidBlock) {
 			IFluidBlock block = (IFluidBlock) fluidBlock;
-			FluidStack drained = block.drain(world, x + side.offsetX, y
-					+ side.offsetY, z + side.offsetZ, false);
+			// TODO gamerforEA code replace, old code:
+			// FluidStack drained = block.drain(world, xx, yy, zz, false);
+			FluidStack drained = null;
+			try
+			{
+				drained = block.drain(world, x, y, z, false);
+			}
+			catch (Throwable ignored)
+			{
+				// NPE in net.minecraftforge.fluids.BlockFluidFinite.drain -> net.minecraftforge.fluids.FluidStack.<init>
+			}
+			// TODO gamerforEA code end
 			if (drained == null)
 				return;
 			IAEFluidStack toInject = FluidUtil.createAEFluidStack(drained);

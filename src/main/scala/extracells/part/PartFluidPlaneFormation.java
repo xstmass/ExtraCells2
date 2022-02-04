@@ -100,9 +100,12 @@ public class PartFluidPlaneFormation extends PartECBase implements
 		if (canDrain == null
 				|| canDrain.getStackSize() < FluidContainerRegistry.BUCKET_VOLUME)
 			return;
-		monitor.extractItems(FluidUtil.createAEFluidStack(this.fluid,
-				FluidContainerRegistry.BUCKET_VOLUME), Actionable.MODULATE,
-				new MachineSource(this));
+		// TODO gamerforEA code replace, old code:
+		// monitor.extractItems(FluidUtil.createAEFluidStack(this.fluid, FluidContainerRegistry.BUCKET_VOLUME), Actionable.MODULATE, new MachineSource(this));
+		canDrain = monitor.extractItems(canDrain, Actionable.MODULATE, new MachineSource(this));
+		if (canDrain == null || canDrain.getStackSize() < FluidContainerRegistry.BUCKET_VOLUME)
+			return;
+		// TODO gamerforEA code end
 		Block fluidWorldBlock = this.fluid.getBlock();
 		world.setBlock(x, y, z, fluidWorldBlock);
 		world.markBlockForUpdate(x, y, z);

@@ -193,6 +193,34 @@ public class HandlerPartStorageFluid implements IMEInventoryHandler<IAEFluidStac
 		if (this.tank == null || input == null || !canAccept(input))
 			return input;
 		FluidStack toFill = input.getFluidStack();
+		// TODO gamerforEA code start
+		int maxFill = 0;
+		for (FluidTankInfo info : this.tank.getTankInfo(this.node.getSide().getOpposite()))
+		{
+			if (info.fluid == null)
+				maxFill += info.capacity;
+			else if (info.fluid.getFluid() == toFill.getFluid())
+				maxFill += info.capacity - info.fluid.amount;
+		}
+		if (maxFill <= 0)
+			return input;
+		int prevAmount = toFill.amount;
+		// TODO gamerforEA code start
+		toFill.amount = prevAmount;
+		// TODO gamerforEA code end
+
+		/* TODO gamerforEA code clear:
+		FluidTankInfo[] infos = this.tank.getTankInfo(this.node.getSide().getOpposite());
+		int maxFill = 0;
+		for (FluidTankInfo info : infos)
+		{
+			if (info.fluid == null)
+				maxFill += info.capacity;
+			else if (info.fluid.getFluid() == toFill.getFluid())
+				maxFill += info.capacity - info.fluid.amount;
+		} */
+		toFill.amount = Math.min(prevAmount, maxFill);
+		// TODO gamerforEA code end
 		int filled = this.tank.fill(this.node.getSide().getOpposite(), new FluidStack(toFill.getFluid(), toFill.amount), mode == Actionable.MODULATE);
 		if (filled == toFill.amount)
 			return null;

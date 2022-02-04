@@ -1,5 +1,6 @@
 package extracells.util.inventory;
 
+import com.gamerforea.extracells.ModUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -114,8 +115,12 @@ public class ECPrivateInventory implements IInventory {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return true;
+	public boolean isUseableByPlayer(EntityPlayer player)
+	{
+		// TODO gamerforEA code replace, old code:
+		// return true;
+		return this.receiver == null || ModUtils.isUseableByPlayer(this.receiver, player);
+		// TODO gamerforEA code end
 	}
 
 	@Override

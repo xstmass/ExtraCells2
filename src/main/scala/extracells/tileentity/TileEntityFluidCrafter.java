@@ -14,6 +14,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import com.gamerforea.extracells.ModUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import extracells.api.IECTileEntity;
 import extracells.crafting.CraftingPattern;
@@ -101,7 +102,10 @@ public class TileEntityFluidCrafter extends TileBase implements IActionHost,
 
 		@Override
 		public boolean isUseableByPlayer(EntityPlayer player) {
-			return true;
+			// TODO gamerforEA code replace, old code:
+			// return true;
+			return ModUtils.isUseableByPlayer(TileEntityFluidCrafter.this, player);
+			// TODO gamerforEA code end
 		}
 
 		@Override

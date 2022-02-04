@@ -63,11 +63,22 @@ public class PartFluidExport extends PartFluidIO {
 				if (stack == null || stack.getStackSize() <= 0)
 					continue;
 
+				/* TODO gamerforEA code replace, old code:
+				int filled = facingTank.fill(this.getSide().getOpposite(), stack.getFluidStack(), true);
+				if (filled > 0)
+				{
+					this.extractFluid(AEApi.instance().storage().createFluidStack(new FluidStack(fluid, filled)), Actionable.MODULATE);
+					return true;
+				} */
+				if (stack.getStackSize() <= 0)
+					continue;
 				int filled = facingTank.fill(this.getSide().getOpposite(), stack.getFluidStack(), false);
-				if (filled > 0) {
+				if (filled > 0)
+				{
 					stack.setStackSize(filled);
 					stack = this.extractFluid(stack, Actionable.MODULATE);
-					if (stack != null && stack.getStackSize() > 0) {
+					if (stack != null && stack.getStackSize() > 0)
+					{
 						facingTank.fill(this.getSide().getOpposite(), stack.getFluidStack(), true);
 						return true;
 					}

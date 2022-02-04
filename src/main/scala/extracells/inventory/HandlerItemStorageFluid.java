@@ -110,6 +110,19 @@ public class HandlerItemStorageFluid implements IMEInventoryHandler<IAEFluidStac
 		return this.totalBytes - i;
 	}
 
+	// TODO gamerforEA code start
+	private int freeBytes(List<FluidStack> fluidStacks)
+	{
+		int i = 0;
+		for (FluidStack stack : fluidStacks)
+		{
+			if (stack != null)
+				i += stack.amount;
+		}
+		return this.totalBytes - i;
+	}
+	// TODO gamerforEA code end
+
 	@Override
 	public AccessRestriction getAccess() {
 		return AccessRestriction.READ_WRITE;
@@ -140,56 +153,90 @@ public class HandlerItemStorageFluid implements IMEInventoryHandler<IAEFluidStac
 	}
 
 	@Override
-	public IAEFluidStack injectItems(IAEFluidStack input, Actionable mode,
-			BaseActionSource src) {
-		if (input == null || !allowedByFormat(input.getFluid()))
+	public IAEFluidStack injectItems(IAEFluidStack input, Actionable mode, BaseActionSource src)
+	{
+		if (input == null || !this.allowedByFormat(input.getFluid()))
 			return input;
 		IAEFluidStack notAdded = input.copy();
 		List<FluidStack> currentFluids = Lists.newArrayList(this.fluidStacks);
-		for (int i = 0; i < currentFluids.size(); i++) {
+		for (int i = 0; i < currentFluids.size(); i++)
+		{
 			FluidStack currentStack = currentFluids.get(i);
-			if (notAdded != null && currentStack != null
-					&& input.getFluid() == currentStack.getFluid()) {
-				if (notAdded.getStackSize() <= freeBytes()) {
-					FluidStack toWrite = new FluidStack(currentStack.getFluid(),
-							currentStack.amount + (int) notAdded.getStackSize());
+			if (notAdded != null && currentStack != null && input.getFluid() == currentStack.getFluid())
+			{
+				// TODO gamerforEA code replace, old code:
+				// if (notAdded.getStackSize() <= freeBytes())
+				int freeBytes = mode == Actionable.MODULATE ? this.freeBytes() : this.freeBytes(currentFluids);
+				if (freeBytes <= 0)
+					break;
+
+				if (notAdded.getStackSize() <= freeBytes)
+				// TODO gamerforEA code end
+				{
+					FluidStack toWrite = new FluidStack(currentStack.getFluid(), currentStack.amount + (int) notAdded.getStackSize());
 					currentFluids.set(i, toWrite);
-					if (mode == Actionable.MODULATE) {
-						writeFluidToSlot(i, toWrite);
-					}
+					if (mode == Actionable.MODULATE)
+						this.writeFluidToSlot(i, toWrite);
 					notAdded = null;
-				} else {
-					FluidStack toWrite = new FluidStack(currentStack.getFluid(), currentStack.amount + freeBytes());
+				}
+				else
+				{
+					// TODO gamerforEA code replace, old code:
+					// FluidStack toWrite = new FluidStack(currentStack.getFluid(), currentStack.amount + freeBytes());
+					FluidStack toWrite = new FluidStack(currentStack.getFluid(), currentStack.amount + freeBytes);
+					// TODO gamerforEA code end
+
 					currentFluids.set(i, toWrite);
-					if (mode == Actionable.MODULATE) {
-						writeFluidToSlot(i, toWrite);
-					}
-					notAdded.setStackSize(notAdded.getStackSize() - freeBytes());
+					if (mode == Actionable.MODULATE)
+						this.writeFluidToSlot(i, toWrite);
+
+					// TODO gamerforEA code replace, old code:
+					// notAdded.setStackSize(notAdded.getStackSize() - freeBytes());
+					notAdded.setStackSize(notAdded.getStackSize() - freeBytes);
+					// TODO gamerforEA code end
 				}
 			}
 		}
-		for (int i = 0; i < currentFluids.size(); i++) {
+		for (int i = 0; i < currentFluids.size(); i++)
+		{
 			FluidStack currentStack = currentFluids.get(i);
-			if (notAdded != null && currentStack == null) {
-				if (input.getStackSize() <= freeBytes()) {
+			if (notAdded != null && currentStack == null)
+			{
+				// TODO gamerforEA code replace, old code:
+				// if (input.getStackSize() <= freeBytes())
+				int freeBytes = mode == Actionable.MODULATE ? this.freeBytes() : this.freeBytes(currentFluids);
+				if (freeBytes <= 0)
+					break;
+
+				if (input.getStackSize() <= freeBytes)
+				// TODO gamerforEA code end
+				{
 					FluidStack toWrite = notAdded.getFluidStack();
 					currentFluids.set(i, toWrite);
-					if (mode == Actionable.MODULATE) {
-						writeFluidToSlot(i, toWrite);
-					}
+					if (mode == Actionable.MODULATE)
+						this.writeFluidToSlot(i, toWrite);
 					notAdded = null;
-				} else {
-					FluidStack toWrite = new FluidStack(notAdded.getFluid(), freeBytes());
+				}
+				else
+				{
+					// TODO gamerforEA code replace, old code:
+					// FluidStack toWrite = new FluidStack(notAdded.getFluid(), freeBytes());
+					FluidStack toWrite = new FluidStack(notAdded.getFluid(), freeBytes);
+					// TODO gamerforEA code end
+
 					currentFluids.set(i, toWrite);
-					if (mode == Actionable.MODULATE) {
-						writeFluidToSlot(i, toWrite);
-					}
-					notAdded.setStackSize(notAdded.getStackSize() - freeBytes());
+					if (mode == Actionable.MODULATE)
+						this.writeFluidToSlot(i, toWrite);
+
+					// TODO gamerforEA code replace, old code:
+					// notAdded.setStackSize(notAdded.getStackSize() - freeBytes());
+					notAdded.setStackSize(notAdded.getStackSize() - freeBytes);
+					// TODO gamerforEA code end
 				}
 			}
 		}
 		if (notAdded == null || !notAdded.equals(input))
-			requestSave();
+			this.requestSave();
 		return notAdded;
 	}
 
