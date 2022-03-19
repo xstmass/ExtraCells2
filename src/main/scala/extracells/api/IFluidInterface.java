@@ -8,14 +8,14 @@ import net.minecraftforge.fluids.IFluidTank;
 
 public interface IFluidInterface {
 
-	public Fluid getFilter(ForgeDirection side);
+    Fluid getFilter(ForgeDirection side);
 
-	public IFluidTank getFluidTank(ForgeDirection side);
+    IFluidTank getFluidTank(ForgeDirection side);
 
-	public IInventory getPatternInventory();
+    IInventory getPatternInventory();
 
-	public void setFilter(ForgeDirection side, Fluid fluid);
+    void setFilter(ForgeDirection side, Fluid fluid);
 
-	public void setFluidTank(ForgeDirection side, FluidStack fluid);
+    void setFluidTank(ForgeDirection side, FluidStack fluid);
 
 }

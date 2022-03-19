@@ -64,27 +64,27 @@ public class TileEntityFluidInterface extends TileBase
     private final Item encodedPattern = AEApi.instance().definitions().items().encodedPattern().maybeItem().orNull();
     // TODO gamerforEA code start
     private final ICraftingPatternDetails[] cachedPatterns = new ICraftingPatternDetails[this.inventory.getSizeInventory()];
+    private final ICraftingPatternDetails[] originalPatternsCache = new ICraftingPatternDetails[9];
     public FluidTank[] tanks = new FluidTank[6];
     public Integer[] fluidFilter = new Integer[this.tanks.length];
     public boolean doNextUpdate = false;
     List<IContainerListener> listeners = new ArrayList<>();
-    private ECFluidGridBlock gridBlock;
+    private final ECFluidGridBlock gridBlock;
     private IGridNode node = null;
     private boolean wasIdle = false;
     private int tickCount = 0;
     private boolean update = false;
     private List<ICraftingPatternDetails> patternHandlers = new ArrayList<>();
-    private HashMap<ICraftingPatternDetails, IFluidCraftingPatternDetails> patternConvert = new HashMap<>();
-    private List<IAEItemStack> requestedItems = new ArrayList<>();
-    private List<IAEItemStack> removeList = new ArrayList<>();
-	private final ICraftingPatternDetails[] originalPatternsCache = new ICraftingPatternDetails[9];
+    private final HashMap<ICraftingPatternDetails, IFluidCraftingPatternDetails> patternConvert = new HashMap<>();
+    private final List<IAEItemStack> requestedItems = new ArrayList<>();
+    private final List<IAEItemStack> removeList = new ArrayList<>();
     private IAEItemStack toExport = null;
-    private List<IAEStack> export = new ArrayList<>();
-    private List<IAEStack> removeFromExport = new ArrayList<>();
+    private final List<IAEStack> export = new ArrayList<>();
+    private final List<IAEStack> removeFromExport = new ArrayList<>();
 
-    private List<IAEStack> addToExport = new ArrayList<>();
+    private final List<IAEStack> addToExport = new ArrayList<>();
 
-    private List<IAEItemStack> watcherList = new ArrayList<>();
+    private final List<IAEItemStack> watcherList = new ArrayList<>();
 
     private boolean isFirstGetGridNode = true;
     private int lastInvModCount = -1;
@@ -846,7 +846,7 @@ public class TileEntityFluidInterface extends TileBase
     private class FluidInterfaceInventory implements IInventory {
         // TODO gamerforEA code start
         public int modCount;
-        private ItemStack[] inv = new ItemStack[9];
+        private final ItemStack[] inv = new ItemStack[9];
         // TODO gamerforEA code end
 
         @Override
@@ -866,7 +866,7 @@ public class TileEntityFluidInterface extends TileBase
                     }
                 }
             }
-			TileEntityFluidInterface.this.originalPatternsCache[slot] = null;
+            TileEntityFluidInterface.this.originalPatternsCache[slot] = null;
             TileEntityFluidInterface.this.update = true;
 
             // TODO gamerforEA code start

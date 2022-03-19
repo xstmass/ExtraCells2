@@ -15,17 +15,13 @@ import net.minecraftforge.fluids.FluidStack
 import org.apache.commons.lang3.tuple.MutablePair
 
 
-class PartGasTerminal extends PartFluidTerminal{
+class PartGasTerminal extends PartFluidTerminal {
 
   val mekLoaded = Mods.MEKANISMGAS.isEnabled
   var doNextFill = false
 
-  override protected def isItemValidForInputSlot(i: Int, itemStack: ItemStack): Boolean = {
-    GasUtil.isGasContainer(itemStack)
-  }
-
   override def doWork {
-    if(mekLoaded)
+    if (mekLoaded)
       doWorkGas
   }
 
@@ -34,7 +30,7 @@ class PartGasTerminal extends PartFluidTerminal{
     val secondSlot: ItemStack = this.inventory.getStackInSlot(1)
     if (secondSlot != null && secondSlot.stackSize >= secondSlot.getMaxStackSize) return
     var container: ItemStack = this.inventory.getStackInSlot(0)
-    if(container == null)
+    if (container == null)
       doNextFill = false
     if (!GasUtil.isGasContainer(container)) return
     container = container.copy
@@ -53,19 +49,19 @@ class PartGasTerminal extends PartFluidTerminal{
       if (result == null)
         proposedAmount = 0
       else if (gasStack == null)
-          proposedAmount = Math.min(capacity, result.getStackSize).toInt
-        else
-          proposedAmount = Math.min(capacity - gasStack.amount, result.getStackSize).toInt
+        proposedAmount = Math.min(capacity, result.getStackSize).toInt
+      else
+        proposedAmount = Math.min(capacity - gasStack.amount, result.getStackSize).toInt
 
       val filledContainer: MutablePair[Integer, ItemStack] = GasUtil.fillStack(container, GasUtil.getGasStack(new FluidStack(this.currentFluid, proposedAmount)))
       val gasStack2 = GasUtil.getGasFromContainer(filledContainer.getRight)
-      if(gasStack2 == null) {
+      if (gasStack2 == null) {
         doNextFill = false
-      }else if (container.stackSize == 1 && gasStack2.amount < GasUtil.getCapacity(filledContainer.getRight)) {
+      } else if (container.stackSize == 1 && gasStack2.amount < GasUtil.getCapacity(filledContainer.getRight)) {
         this.inventory.setInventorySlotContents(0, filledContainer.getRight)
         monitor.extractItems(FluidUtil.createAEFluidStack(this.currentFluid, filledContainer.getLeft.toLong), Actionable.MODULATE, this.machineSource)
         doNextFill = true
-      }else if (fillSecondSlot(filledContainer.getRight)) {
+      } else if (fillSecondSlot(filledContainer.getRight)) {
         monitor.extractItems(FluidUtil.createAEFluidStack(this.currentFluid, filledContainer.getLeft.toLong), Actionable.MODULATE, this.machineSource)
         decreaseFirstSlot
         doNextFill = false
@@ -83,12 +79,13 @@ class PartGasTerminal extends PartFluidTerminal{
       if (emptyContainer != null && GasUtil.getGasFromContainer(emptyContainer) != null && emptyContainer.stackSize == 1) {
         monitor.injectItems(GasUtil.createAEFluidStack(gasStack), Actionable.MODULATE, this.machineSource)
         this.inventory.setInventorySlotContents(0, emptyContainer)
-      }else if (emptyContainer == null || fillSecondSlot(emptyContainer)) {
+      } else if (emptyContainer == null || fillSecondSlot(emptyContainer)) {
         monitor.injectItems(GasUtil.createAEFluidStack(containerGas), Actionable.MODULATE, this.machineSource)
         decreaseFirstSlot
       }
     }
   }
+
   override def getServerGuiElement(player: EntityPlayer): AnyRef = {
     if (mekLoaded)
       new ContainerGasTerminal(this, player)
@@ -101,5 +98,9 @@ class PartGasTerminal extends PartFluidTerminal{
       new GuiGasTerminal(this, player)
     else
       null
+  }
+
+  override protected def isItemValidForInputSlot(i: Int, itemStack: ItemStack): Boolean = {
+    GasUtil.isGasContainer(itemStack)
   }
 }

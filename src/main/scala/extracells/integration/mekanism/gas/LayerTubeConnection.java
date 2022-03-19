@@ -7,11 +7,11 @@ import mekanism.api.gas.IGasHandler;
 import mekanism.api.gas.ITubeConnection;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LayerTubeConnection extends LayerBase implements ITubeConnection{
+public class LayerTubeConnection extends LayerBase implements ITubeConnection {
     @Override
     public boolean canTubeConnect(ForgeDirection side) {
         IPart part = this.getPart(side);
-        if(part instanceof ITubeConnection) {
+        if (part instanceof ITubeConnection) {
             return ((ITubeConnection) part).canTubeConnect(side);
         }
         return part instanceof IGasHandler;

@@ -88,7 +88,7 @@ public class ItemStoragePhysical extends ItemECBase implements IStorageCell,
     @Override
     public int getBytesPerType(ItemStack cellItem) {
         return Extracells.dynamicTypes() ? bytes_cell[MathHelper.clamp_int(
-                cellItem.getItemDamage(), 0, suffixes.length - 1)] / 128 : 8;
+                cellItem.getItemDamage(), 0, suffixes.length - 1)] / 128: 8;
     }
 
     @Override
@@ -102,6 +102,7 @@ public class ItemStoragePhysical extends ItemECBase implements IStorageCell,
             itemStack.setTagCompound(new NBTTagCompound());
         return itemStack.getTagCompound();
     }
+    // TODO gamerforEA code end
 
     @Override
     public double extractAEPower(ItemStack itemStack, double amt) {
@@ -648,12 +649,10 @@ public class ItemStoragePhysical extends ItemECBase implements IStorageCell,
         is.getTagCompound().setInteger("fuzzyMode", fzMode.ordinal());
     }
 
-    @Override
     public String getOreFilter(ItemStack itemStack) {
         return Platform.openNbtData(itemStack).getString("OreFilter");
     }
 
-    @Override
     public void setOreFilter(ItemStack itemStack, String s) {
         Platform.openNbtData(itemStack).setString("OreFilter", s);
     }
@@ -662,7 +661,7 @@ public class ItemStoragePhysical extends ItemECBase implements IStorageCell,
     public boolean showDurabilityBar(ItemStack itemStack) {
         if (itemStack == null)
             return false;
-        return itemStack.getItemDamage() == 4 ? true : false;
+        return itemStack.getItemDamage() == 4;
     }
 
     @Override

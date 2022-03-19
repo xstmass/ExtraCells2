@@ -6,7 +6,7 @@ import net.p455w0rd.wirelesscraftingterminal.reference.Reference;
 
 
 object WirelessCrafting {
-  def openCraftingTerminal(player :EntityPlayer) :Unit =
+  def openCraftingTerminal(player: EntityPlayer): Unit =
     WCTApi.instance.interact.openWirelessCraftingTerminalGui(player)
 
   def getBoosterItem =

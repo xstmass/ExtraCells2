@@ -16,14 +16,7 @@ import net.minecraftforge.common.util.ForgeDirection
 import net.minecraftforge.fluids._
 
 class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with IFluidHandler with IActionHost with TPowerStorage {
-  private[tileentity] var isFirstGridNode: Boolean = true
   private final val gridBlock = new ECGridBlockVibrantChamber(this)
-  private[tileentity] var node: IGridNode = null
-  private var burnTime: Int = 0
-  private var burnTimeTotal: Int = 0
-  private var timer: Int = 0
-  private var timerEnergy: Int = 0
-  private var energyLeft: Double = .0
   var tank: FluidTank = new FluidTank((16000)) {
     override def readFromNBT(nbt: NBTTagCompound): FluidTank = {
       if (!nbt.hasKey("Empty")) {
@@ -36,6 +29,13 @@ class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with I
       return this
     }
   }
+  private[tileentity] var isFirstGridNode: Boolean = true
+  private[tileentity] var node: IGridNode = null
+  private var burnTime: Int = 0
+  private var burnTimeTotal: Int = 0
+  private var timer: Int = 0
+  private var timerEnergy: Int = 0
+  private var energyLeft: Double = .0
 
   override def updateEntity {
     super.updateEntity
@@ -101,24 +101,7 @@ class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with I
 
   override def getPowerUsage = 0.0D
 
-
-  override def getGridNode(forgeDirection: ForgeDirection): IGridNode = {
-    if (isFirstGridNode && hasWorldObj && !getWorldObj.isRemote) {
-      isFirstGridNode = false
-      try {
-        node = AEApi.instance.createGridNode(gridBlock)
-        node.updateState
-      }
-      catch {
-        case e: Exception => {
-          isFirstGridNode = true
-        }
-      }
-    }
-    node
-  }
-
-  def getGridNodeWithoutUpdate: IGridNode ={
+  def getGridNodeWithoutUpdate: IGridNode = {
     if (isFirstGridNode && hasWorldObj && !getWorldObj.isRemote) {
       isFirstGridNode = false
       try {
@@ -146,9 +129,7 @@ class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with I
 
   override def drain(from: ForgeDirection, resource: FluidStack, doDrain: Boolean): FluidStack = null
 
-
   override def drain(from: ForgeDirection, maxDrain: Int, doDrain: Boolean): FluidStack = null
-
 
   override def canFill(from: ForgeDirection, fluid: Fluid): Boolean = {
     if (fluid == null || FuelBurnTime.getBurnTime(fluid) == 0) return false
@@ -159,9 +140,37 @@ class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with I
 
   override def getTankInfo(from: ForgeDirection): Array[FluidTankInfo] = Array[FluidTankInfo](tank.getInfo)
 
-
   def getTank: FluidTank = tank
 
+  def getBurntTimeScaled(scal: Int): Int = {
+    return if (burnTime != 0) burnTime * scal / burnTimeTotal else 0
+  }
+
+  def getActionableNode: IGridNode = {
+    return getGridNode(ForgeDirection.UNKNOWN)
+  }
+
+  override def getGridNode(forgeDirection: ForgeDirection): IGridNode = {
+    if (isFirstGridNode && hasWorldObj && !getWorldObj.isRemote) {
+      isFirstGridNode = false
+      try {
+        node = AEApi.instance.createGridNode(gridBlock)
+        node.updateState
+      }
+      catch {
+        case e: Exception => {
+          isFirstGridNode = true
+        }
+      }
+    }
+    node
+  }
+
+  override def getDescriptionPacket: Packet = {
+    val nbtTag: NBTTagCompound = new NBTTagCompound
+    writeToNBT(nbtTag)
+    return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.getBlockMetadata, nbtTag)
+  }
 
   override def writeToNBT(nbt: NBTTagCompound) {
     super.writeToNBT(nbt)
@@ -174,6 +183,10 @@ class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with I
     tank.writeToNBT(nbt)
   }
 
+  override def onDataPacket(net: NetworkManager, pkt: S35PacketUpdateTileEntity) {
+    readFromNBT(pkt.func_148857_g)
+  }
+
   override def readFromNBT(nbt: NBTTagCompound) {
     super.readFromNBT(nbt)
     readPowerFromNBT(nbt)
@@ -183,25 +196,6 @@ class TileEntityVibrationChamberFluid extends TileBase with IECTileEntity with I
     if (nbt.hasKey("timerEnergy")) this.timerEnergy = nbt.getInteger("timerEnergy")
     if (nbt.hasKey("energyLeft")) this.energyLeft = nbt.getDouble("energyLeft")
     tank.readFromNBT(nbt)
-  }
-
-
-  def getBurntTimeScaled(scal: Int): Int = {
-    return if (burnTime != 0) burnTime * scal / burnTimeTotal else 0
-  }
-
-  def getActionableNode: IGridNode = {
-    return getGridNode(ForgeDirection.UNKNOWN)
-  }
-
-  override def getDescriptionPacket: Packet = {
-    val nbtTag: NBTTagCompound = new NBTTagCompound
-    writeToNBT(nbtTag)
-    return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.getBlockMetadata, nbtTag)
-  }
-
-  override def onDataPacket(net: NetworkManager, pkt: S35PacketUpdateTileEntity) {
-    readFromNBT(pkt.func_148857_g)
   }
 
   def getBurnTime: Int = {

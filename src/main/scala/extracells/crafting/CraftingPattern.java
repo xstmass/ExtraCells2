@@ -18,9 +18,7 @@ import net.minecraftforge.fluids.IFluidContainerItem;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CraftingPattern implements IFluidCraftingPatternDetails,
-        Comparable<CraftingPattern> {
-
+public class CraftingPattern implements IFluidCraftingPatternDetails, Comparable<CraftingPattern> {
     protected final ICraftingPatternDetails pattern;
 
     private IAEFluidStack[] fluidsCondensed = null;
@@ -60,7 +58,7 @@ public class CraftingPattern implements IFluidCraftingPatternDetails,
 
     @Override
     public int compareTo(CraftingPattern o) {
-        return compareInt(o.getPriority(), this.getPriority());
+        return this.compareInt(o.getPriority(), this.getPriority());
     }
 
     @Override
@@ -70,22 +68,19 @@ public class CraftingPattern implements IFluidCraftingPatternDetails,
         if (this.getClass() != obj.getClass())
             return false;
         CraftingPattern other = (CraftingPattern) obj;
-        if (this.pattern != null && other.pattern != null)
-            return this.pattern.equals(other.pattern);
-        return false;
+        return this.pattern != null && other.pattern != null && this.pattern.equals(other.pattern);
     }
 
     @Override
     public IAEFluidStack[] getCondensedFluidInputs() {
-        if (this.fluidsCondensed == null) {
-            getCondensedInputs();
-        }
+        if (this.fluidsCondensed == null)
+            this.getCondensedInputs();
         return this.fluidsCondensed;
     }
 
     @Override
     public IAEItemStack[] getCondensedInputs() {
-        return removeFluidContainers(this.pattern.getCondensedInputs(), true);
+        return this.removeFluidContainers(this.pattern.getCondensedInputs(), true);
     }
 
     @Override
@@ -95,15 +90,14 @@ public class CraftingPattern implements IFluidCraftingPatternDetails,
 
     @Override
     public IAEFluidStack[] getFluidInputs() {
-        if (this.fluids == null) {
-            getInputs();
-        }
+        if (this.fluids == null)
+            this.getInputs();
         return this.fluids;
     }
 
     @Override
     public IAEItemStack[] getInputs() {
-        return removeFluidContainers(this.pattern.getInputs(), false);
+        return this.removeFluidContainers(this.pattern.getInputs(), false);
     }
 
     @Override
@@ -111,35 +105,26 @@ public class CraftingPattern implements IFluidCraftingPatternDetails,
         IAEItemStack[] input = this.pattern.getInputs();
         for (int i = 0; i < input.length; i++) {
             IAEItemStack stack = input[i];
-            if (stack != null
-                    && FluidContainerRegistry.isFilledContainer(stack
-                    .getItemStack())) {
+            if (stack != null && FluidContainerRegistry.isFilledContainer(stack.getItemStack()))
                 try {
-                    craftingInv.setInventorySlotContents(i,
-                            input[i].getItemStack());
-                } catch (Throwable e) {
+                    craftingInv.setInventorySlotContents(i, input[i].getItemStack());
+                } catch (Throwable ignored) {
                 }
-            } else if (stack != null
-                    && stack.getItem() instanceof IFluidContainerItem) {
+            else if (stack != null && stack.getItem() instanceof IFluidContainerItem)
                 try {
-                    craftingInv.setInventorySlotContents(i,
-                            input[i].getItemStack());
-                } catch (Throwable e) {
+                    craftingInv.setInventorySlotContents(i, input[i].getItemStack());
+                } catch (Throwable ignored) {
                 }
-            }
         }
         ItemStack returnStack = this.pattern.getOutput(craftingInv, world);
         for (int i = 0; i < input.length; i++) {
             IAEItemStack stack = input[i];
-            if (stack != null
-                    && FluidContainerRegistry.isFilledContainer(stack
-                    .getItemStack())) {
+            if (stack != null && FluidContainerRegistry.isFilledContainer(stack.getItemStack()))
                 craftingInv.setInventorySlotContents(i, null);
-            } else if (stack != null
-                    && stack.getItem() instanceof IFluidContainerItem) {
+            else if (stack != null && stack.getItem() instanceof IFluidContainerItem)
                 craftingInv.setInventorySlotContents(i, null);
-            }
         }
+
         return returnStack;
     }
 
@@ -176,8 +161,7 @@ public class CraftingPattern implements IFluidCraftingPatternDetails,
     }
 
     @Override
-    public boolean isValidItemForSlot(int slotIndex, ItemStack itemStack,
-                                      World world) {
+    public boolean isValidItemForSlot(int slotIndex, ItemStack itemStack, World world) {
         return this.pattern.isValidItemForSlot(slotIndex, itemStack, world);
     }
     // TODO gamerforEA code end

@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 
 public class OCRecipes {
 
-    public static void loadRecipes(){
+    public static void loadRecipes() {
         GameRegistry.addShapedRecipe(new ItemStack(GameRegistry.findItem("extracells", "oc.upgrade")), "DAD", "MBM", "DCD",
                 'A', AEApi.instance().definitions().materials().wireless().maybeStack(1).get(),
                 'C', API.items.get("printedCircuitBoard").createItemStack(1),

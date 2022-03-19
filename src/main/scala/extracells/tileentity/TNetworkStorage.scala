@@ -9,16 +9,6 @@ import net.minecraftforge.common.util.ForgeDirection
 
 trait TNetworkStorage {
 
-  def getStorageGrid(side: ForgeDirection): IStorageGrid = {
-    if(!this.isInstanceOf[IGridHost])
-      return  null
-    val host = this.asInstanceOf[IGridHost]
-    if (host.getGridNode(side) == null) return null
-    val grid: IGrid = host.getGridNode(side).getGrid
-    if (grid == null) return null
-    grid.getCache(classOf[IStorageGrid])
-  }
-
   def getFluidInventory(side: ForgeDirection): IMEMonitor[IAEFluidStack] = {
     val storageGrid = getStorageGrid(side)
     if (storageGrid == null)
@@ -33,6 +23,16 @@ trait TNetworkStorage {
       null
     else
       storageGrid.getItemInventory
+  }
+
+  def getStorageGrid(side: ForgeDirection): IStorageGrid = {
+    if (!this.isInstanceOf[IGridHost])
+      return null
+    val host = this.asInstanceOf[IGridHost]
+    if (host.getGridNode(side) == null) return null
+    val grid: IGrid = host.getGridNode(side).getGrid
+    if (grid == null) return null
+    grid.getCache(classOf[IStorageGrid])
   }
 
 }

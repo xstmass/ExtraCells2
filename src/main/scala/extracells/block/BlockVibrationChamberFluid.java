@@ -22,9 +22,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockVibrationChamberFluid extends BlockEC implements TGuiBlock {
 
-    private IIcon[] icons = new IIcon[3];
+    private final IIcon[] icons = new IIcon[3];
 
-    public BlockVibrationChamberFluid(){
+    public BlockVibrationChamberFluid() {
         super(Material.iron, 2.0F, 10.0F);
     }
 
@@ -52,24 +52,23 @@ public class BlockVibrationChamberFluid extends BlockEC implements TGuiBlock {
     @SideOnly(Side.CLIENT)
     @Override
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-        if(side == world.getBlockMetadata(x, y, z)){
-            TileEntity tile = world.getTileEntity(x,y, z);
-            if(!(tile instanceof  TileEntityVibrationChamberFluid))
+        if (side == world.getBlockMetadata(x, y, z)) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileEntityVibrationChamberFluid))
                 return icons[0];
             TileEntityVibrationChamberFluid chamberFluid = (TileEntityVibrationChamberFluid) tile;
             if (chamberFluid.getBurnTime() > 0 && chamberFluid.getBurnTime() < (chamberFluid.getBurnTimeTotal()))
                 return icons[2];
             else
                 return icons[1];
-        }else
+        } else
             return icons[0];
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public IIcon getIcon(int side, int meta){
-        switch (side)
-        {
+    public IIcon getIcon(int side, int meta) {
+        switch (side) {
             case 4:
                 return icons[1];
             default:
@@ -79,74 +78,64 @@ public class BlockVibrationChamberFluid extends BlockEC implements TGuiBlock {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public Object getClientGuiElement(EntityPlayer player, World world, int x, int y, int z){
+    public Object getClientGuiElement(EntityPlayer player, World world, int x, int y, int z) {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if(tileEntity != null && tileEntity instanceof  TileEntityVibrationChamberFluid)
-        return new GuiVibrationChamberFluid(player, (TileEntityVibrationChamberFluid)tileEntity);
+        if (tileEntity != null && tileEntity instanceof TileEntityVibrationChamberFluid)
+            return new GuiVibrationChamberFluid(player, (TileEntityVibrationChamberFluid) tileEntity);
         return null;
     }
 
     @Override
-    public Object getServerGuiElement(EntityPlayer player, World world, int x, int y, int z){
+    public Object getServerGuiElement(EntityPlayer player, World world, int x, int y, int z) {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if(tileEntity != null && tileEntity instanceof  TileEntityVibrationChamberFluid)
-            return new ContainerVibrationChamberFluid(player.inventory, (TileEntityVibrationChamberFluid)tileEntity);
+        if (tileEntity != null && tileEntity instanceof TileEntityVibrationChamberFluid)
+            return new ContainerVibrationChamberFluid(player.inventory, (TileEntityVibrationChamberFluid) tileEntity);
         return null;
     }
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
         super.onBlockPlacedBy(world, x, y, z, entity, stack);
-        if(world == null)
+        if (world == null)
             return;
 
-        if(entity != null){
+        if (entity != null) {
             int l = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
-            if (!entity.isSneaking())
-            {
-                if (l == 0)
-                {
+            if (!entity.isSneaking()) {
+                if (l == 0) {
                     world.setBlockMetadataWithNotify(x, y, z, 2, 2);
                 }
 
-                if (l == 1)
-                {
+                if (l == 1) {
                     world.setBlockMetadataWithNotify(x, y, z, 5, 2);
                 }
 
-                if (l == 2)
-                {
+                if (l == 2) {
                     world.setBlockMetadataWithNotify(x, y, z, 3, 2);
                 }
 
-                if (l == 3)
-                {
+                if (l == 3) {
                     world.setBlockMetadataWithNotify(x, y, z, 4, 2);
                 }
-            } else
-            {
-                if (l == 0)
-                {
+            } else {
+                if (l == 0) {
                     world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(2).getOpposite().ordinal(), 2);
                 }
 
-                if (l == 1)
-                {
+                if (l == 1) {
                     world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(5).getOpposite().ordinal(), 2);
                 }
 
-                if (l == 2)
-                {
+                if (l == 2) {
                     world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(3).getOpposite().ordinal(), 2);
                 }
 
-                if (l == 3)
-                {
+                if (l == 3) {
                     world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(4).getOpposite().ordinal(), 2);
                 }
             }
-        }else
-             world.setBlockMetadataWithNotify(x, y, z, 2, 2);
+        } else
+            world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 
         if (world.isRemote)
             return;

@@ -186,7 +186,7 @@ public class ContainerFluidStorage extends Container
             IAEFluidStack result = this.monitor.extractItems(FluidUtil.createAEFluidStack(this.selectedFluid, capacity), Actionable.SIMULATE, new PlayerSource(this.player, null));
 
             //Calculates the amount of fluid to fill container with.
-            int proposedAmount = result == null ? 0 : (int) Math.min(capacity, result.getStackSize());
+            int proposedAmount = result == null ? 0: (int) Math.min(capacity, result.getStackSize());
             if (proposedAmount == 0)
                 return;
 
@@ -207,7 +207,7 @@ public class ContainerFluidStorage extends Container
             if (this.simulateFillSecondSlot(filledContainer.getRight())) {
                 container = containerCopy;
                 result = this.monitor.extractItems(FluidUtil.createAEFluidStack(this.selectedFluid, filledContainer.getLeft()), Actionable.MODULATE, new PlayerSource(this.player, null));
-                proposedAmount = result == null ? 0 : (int) Math.min(capacity, result.getStackSize());
+                proposedAmount = result == null ? 0: (int) Math.min(capacity, result.getStackSize());
                 if (proposedAmount == 0)
                     return;
                 filledContainer = FluidUtil.fillStack(container, new FluidStack(this.selectedFluid, proposedAmount));

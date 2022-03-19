@@ -1,7 +1,5 @@
 package extracells.item
 
-import java.util
-
 import appeng.api.config.AccessRestriction
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import net.minecraft.creativetab.CreativeTabs
@@ -10,8 +8,10 @@ import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.StatCollector
 
+import java.util
 
-trait WirelessTermBase extends PowerItem{
+
+trait WirelessTermBase extends PowerItem {
 
   setMaxStackSize(1)
   override val MAX_POWER: Double = 1600000

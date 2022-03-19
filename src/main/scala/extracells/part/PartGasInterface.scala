@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.RenderBlocks
 import net.minecraftforge.common.util.ForgeDirection
 
 
-class PartGasInterface extends PartECBase with GasInterfaceBase{
+class PartGasInterface extends PartECBase with GasInterfaceBase {
   var fluidFilter = -1
 
   override def cableConnectionRenderTo(): Int = ???

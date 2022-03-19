@@ -12,11 +12,11 @@ import org.lwjgl.opengl.GL11;
 public class GuiVibrationChamberFluid extends GuiContainer {
 
 
-    private ResourceLocation guiTexture = new ResourceLocation("extracells",
-            "textures/gui/vibrationchamberfluid.png");
-    private EntityPlayer player;
     public WidgetFluidTank widgetFluidTank;
-    private TileEntityVibrationChamberFluid tileEntity;
+    private final ResourceLocation guiTexture = new ResourceLocation("extracells",
+            "textures/gui/vibrationchamberfluid.png");
+    private final EntityPlayer player;
+    private final TileEntityVibrationChamberFluid tileEntity;
 
     public GuiVibrationChamberFluid(EntityPlayer player, TileEntityVibrationChamberFluid tileentity) {
         super(new ContainerVibrationChamberFluid(player.inventory, tileentity));
@@ -27,8 +27,8 @@ public class GuiVibrationChamberFluid extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        if(widgetFluidTank != null)
-        widgetFluidTank.draw(widgetFluidTank.posX, widgetFluidTank.posY, mouseX, mouseY);
+        if (widgetFluidTank != null)
+            widgetFluidTank.draw(widgetFluidTank.posX, widgetFluidTank.posY, mouseX, mouseY);
         if (widgetFluidTank != null)
             if (func_146978_c(widgetFluidTank.posX, widgetFluidTank.posY, 18, 73, mouseX, mouseY)) {
                 widgetFluidTank.drawTooltip(mouseX - this.guiLeft, mouseY
@@ -48,7 +48,6 @@ public class GuiVibrationChamberFluid extends GuiContainer {
         //int burnTime = tileEntity.getBurntTimeScaled(52);
         //drawTexturedModalRect(posX + 105, posY + 17 + 54 - burnTime, 176, 0 + 54 - burnTime, 3, burnTime);
     }
-
 
 
     @Override

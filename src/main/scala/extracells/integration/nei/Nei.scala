@@ -1,14 +1,24 @@
 package extracells.integration.nei
 
-import java.util
-
 import codechicken.nei.api.API
 import extracells.Extracells
 import extracells.registries.{BlockEnum, ItemEnum}
 import net.minecraft.item.{Item, ItemStack}
 
+import java.util
+
 
 object Nei {
+
+  def init = {
+    hideItems
+    if (Extracells.proxy.isClient) {
+      val handler = new UniversalTerminalRecipe
+      API.registerUsageHandler(handler)
+      API.registerRecipeHandler(handler)
+    }
+
+  }
 
   def hideItems = {
     API.hideItem(new ItemStack(ItemEnum.FLUIDITEM.getItem))
@@ -19,7 +29,7 @@ object Nei {
         val list = new util.ArrayList[ItemStack]
         i.getSubItems(i, Extracells.ModTab, list)
         val it = list.iterator
-        while(it.hasNext){
+        while (it.hasNext) {
           API.hideItem(it.next)
         }
       }
@@ -31,21 +41,11 @@ object Nei {
         val list = new util.ArrayList[ItemStack]
         b.getSubBlocks(Item.getItemFromBlock(b), Extracells.ModTab, list)
         val it = list.iterator
-        while(it.hasNext){
+        while (it.hasNext) {
           API.hideItem(it.next)
         }
       }
     }
-  }
-
-  def init = {
-    hideItems
-    if(Extracells.proxy.isClient){
-      val handler = new UniversalTerminalRecipe
-      API.registerUsageHandler(handler)
-      API.registerRecipeHandler(handler)
-    }
-
   }
 
 }

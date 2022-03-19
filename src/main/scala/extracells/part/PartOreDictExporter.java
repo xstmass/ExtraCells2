@@ -169,42 +169,34 @@ public class PartOreDictExporter extends PartECBase implements IGridTickable {
         }
     }
 
-    private boolean checkItem(IAEItemStack s)
-    {
+    private boolean checkItem(IAEItemStack s) {
         if (s == null || this.filter.equals(""))
             return false;
         int[] ids = OreDictionary.getOreIDs(s.getItemStack());
-        for (int id : ids)
-        {
+        for (int id : ids) {
             String name = OreDictionary.getOreName(id);
-            if (this.filter.startsWith("*") && this.filter.endsWith("*"))
-            {
+            if (this.filter.startsWith("*") && this.filter.endsWith("*")) {
                 String filter2 = this.filter.replace("*", "");
                 if (filter2.equals(""))
                     return true;
                 if (name.contains(filter2))
                     return true;
-            }
-            else if (this.filter.startsWith("*"))
-            {
+            } else if (this.filter.startsWith("*")) {
                 String filter2 = this.filter.replace("*", "");
                 if (name.endsWith(filter2))
                     return true;
-            }
-            else if (this.filter.endsWith("*"))
-            {
+            } else if (this.filter.endsWith("*")) {
                 String filter2 = this.filter.replace("*", "");
                 if (name.startsWith(filter2))
                     return true;
-            }
-            else if (name.equals(this.filter))
+            } else if (name.equals(this.filter))
                 return true;
         }
         return false;
     }
 
     public boolean doWork(int rate, int TicksSinceLastCall) {
-        int amount = rate * TicksSinceLastCall >= 64 ? 64 : rate * TicksSinceLastCall;
+        int amount = rate * TicksSinceLastCall >= 64 ? 64: rate * TicksSinceLastCall;
         IStorageGrid storage = this.getStorageGrid();
 
         // TODO gamerforEA code start

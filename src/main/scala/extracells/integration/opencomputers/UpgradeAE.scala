@@ -12,7 +12,6 @@ import appeng.api.util.WorldCoord
 import appeng.tile.misc.TileSecurity
 import extracells.item.ItemOCUpgrade
 import li.cil.oc.api.Network
-import li.cil.oc.api.network.EnvironmentHost
 import li.cil.oc.api.internal.{Agent, Database, Drone, Robot}
 import li.cil.oc.api.machine.{Arguments, Callback, Context}
 import li.cil.oc.api.network._
@@ -26,102 +25,20 @@ import net.minecraftforge.fluids.FluidContainerRegistry
 import scala.collection.JavaConversions._
 
 
-class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.NetworkControl[TileSecurity] with ec.NetworkControl[TileSecurity]{
+class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.NetworkControl[TileSecurity] with ec.NetworkControl[TileSecurity] {
   val robot: Robot = host match {
-    case r : Robot => r
+    case r: Robot => r
     case _ => null
   }
 
   val drone: Drone = host match {
-    case d : Drone => d
+    case d: Drone => d
     case _ => null
   }
+  val agent: Agent = host.asInstanceOf[Agent]
   var isActive = false
 
-  val agent: Agent = host.asInstanceOf[Agent]
-
   setNode(Network.newNode(this, Visibility.Network).withConnector().withComponent("upgrade_me", Visibility.Neighbors).create())
-
-  def getComponent: ItemStack = {
-    if (robot != null)
-      return robot.getStackInSlot(robot.componentSlot(node.address))
-    else if(drone != null){
-      val i = drone.internalComponents.iterator
-      while (i.hasNext){
-        val item = i.next
-        if(item != null && item.getItem == ItemOCUpgrade)
-          return item
-      }
-    }
-    null
-  }
-
-  def getSecurity: IGridHost = {
-    if (host.world.isRemote) return null
-    val component = getComponent
-    val sec = AEApi.instance.registries.locatable.getLocatableBy(getAEKey(component)).asInstanceOf[IGridHost]
-    if(checkRange(component, sec))
-      sec
-    else
-      null
-  }
-  def checkRange(stack: ItemStack, sec: IGridHost): Boolean = {
-    if (sec == null) return false
-    val gridNode: IGridNode = sec.getGridNode(ForgeDirection.UNKNOWN)
-    if (gridNode == null) return false
-    val grid = gridNode.getGrid
-    if(grid == null) return false
-    stack.getItemDamage match{
-      case 0 =>
-        grid.getMachines(AEApi.instance.definitions.blocks.wireless.maybeEntity.get.asInstanceOf[Class[_ <: IGridHost]]).iterator.hasNext
-      case 1 =>
-        val gridBlock = gridNode.getGridBlock
-        if (gridBlock == null) return false
-        val loc = gridBlock.getLocation
-        if (loc == null) return false
-        for (node <- grid.getMachines(AEApi.instance.definitions.blocks.wireless.maybeEntity.get.asInstanceOf[Class[_ <: IGridHost]])) {
-          val accessPoint: IWirelessAccessPoint = node.getMachine.asInstanceOf[IWirelessAccessPoint]
-          val distance: WorldCoord = accessPoint.getLocation.subtract(agent.xPosition.toInt, agent.yPosition.toInt, agent.zPosition.toInt)
-          val squaredDistance: Int = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z
-          val range = accessPoint.getRange
-          if (squaredDistance <= range * range) return true
-        }
-        false
-      case _ =>
-        val gridBlock = gridNode.getGridBlock
-        if (gridBlock == null) return false
-        val loc = gridBlock.getLocation
-        if (loc == null) return false
-        for (node <- grid.getMachines(AEApi.instance.definitions.blocks.wireless.maybeEntity.get.asInstanceOf[Class[_ <: IGridHost]])) {
-          val accessPoint: IWirelessAccessPoint = node.getMachine.asInstanceOf[IWirelessAccessPoint]
-          val distance: WorldCoord = accessPoint.getLocation.subtract(agent.xPosition.toInt, agent.yPosition.toInt, agent.zPosition.toInt)
-          val squaredDistance: Int = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z
-          val range = accessPoint.getRange / 2
-          if (squaredDistance <= range * range) return true
-        }
-        false
-    }
-  }
-
-  def getGrid: IGrid = {
-    if (host.world.isRemote) return null
-    val securityTerminal = getSecurity
-    if (securityTerminal == null) return null
-    val gridNode: IGridNode = securityTerminal.getGridNode(ForgeDirection.UNKNOWN)
-    if (gridNode == null) return null
-    gridNode.getGrid
-  }
-
-  def getAEKey(stack: ItemStack): Long = {
-    try {
-      return WirelessHandlerUpgradeAE.getEncryptionKey(stack).toLong
-    }
-    catch {
-      case _: Throwable =>
-    }
-    0L
-  }
-
 
   override def tile: TileSecurity = {
     val sec = getSecurity
@@ -166,14 +83,14 @@ class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.Ne
     val stack2 = stack.copy
     stack2.stackSize = amount
     val notInjected = inv.injectItems(AEApi.instance.storage.createItemStack(stack2), Actionable.MODULATE, new MachineSource(tile))
-    if (notInjected == null){
+    if (notInjected == null) {
       stack.stackSize -= amount
       if (stack.stackSize <= 0)
         invRobot.setInventorySlotContents(selected, null)
       else
         invRobot.setInventorySlotContents(selected, stack)
       Array(amount.underlying)
-    }else{
+    } else {
       stack.stackSize = stack.stackSize - amount + notInjected.getStackSize.toInt
       if (stack.stackSize <= 0)
         invRobot.setInventorySlotContents(selected, null)
@@ -202,17 +119,17 @@ class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.Ne
     val database: Database = env.asInstanceOf[Database]
     val sel = invRobot.getStackInSlot(selected)
     val inSlot =
-    if (sel == null)
-      0
-    else
-      sel.stackSize
+      if (sel == null)
+        0
+      else
+        sel.stackSize
     val maxSize =
-    if (sel == null)
-      64
-    else
-      sel.getMaxStackSize
+      if (sel == null)
+        64
+      else
+        sel.getMaxStackSize
     val stack = database.getStackInSlot(entry - 1)
-    if(stack == null) return Array(0.underlying)
+    if (stack == null) return Array(0.underlying)
     stack.stackSize = Math.min(amount, maxSize - inSlot)
     val stack2 = stack.copy
     stack2.stackSize = 1
@@ -221,11 +138,11 @@ class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.Ne
         val sel3 = sel.copy
         sel3.stackSize = 1
         sel3
-      }else
+      } else
         null
-    if(sel != null && !ItemStack.areItemStacksEqual(sel2, stack2)) return Array(0.underlying)
+    if (sel != null && !ItemStack.areItemStacksEqual(sel2, stack2)) return Array(0.underlying)
     val extracted = inv.extractItems(AEApi.instance.storage.createItemStack(stack), Actionable.MODULATE, new MachineSource(tile))
-    if(extracted == null) return Array(0.underlying)
+    if (extracted == null) return Array(0.underlying)
     val ext = extracted.getStackSize.toInt
     stack.stackSize = inSlot + ext
     invRobot.setInventorySlotContents(selected, stack)
@@ -245,10 +162,10 @@ class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.Ne
     val fluid2 = fluid.copy
     fluid2.amount = amount
     val notInjectet = inv.injectItems(AEApi.instance.storage.createFluidStack(fluid2), Actionable.MODULATE, new MachineSource(tile))
-    if (notInjectet == null){
+    if (notInjectet == null) {
       tank.drain(amount, true)
       Array(amount.underlying)
-    }else{
+    } else {
       tank.drain(amount - notInjectet.getStackSize.toInt, true)
       Array((amount - notInjectet.getStackSize).underlying)
     }
@@ -281,11 +198,77 @@ class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.Ne
     Array(tank.fill(extracted.getFluidStack, true).underlying)
   }
 
-
   @Callback(doc = "function():boolean -- Return true if the card is linket to your ae network.")
   def isLinked(context: Context, args: Arguments): Array[AnyRef] = {
     val isLinked = getGrid != null
     Array(boolean2Boolean(isLinked))
+  }
+
+  def getGrid: IGrid = {
+    if (host.world.isRemote) return null
+    val securityTerminal = getSecurity
+    if (securityTerminal == null) return null
+    val gridNode: IGridNode = securityTerminal.getGridNode(ForgeDirection.UNKNOWN)
+    if (gridNode == null) return null
+    gridNode.getGrid
+  }
+
+  def getSecurity: IGridHost = {
+    if (host.world.isRemote) return null
+    val component = getComponent
+    val sec = AEApi.instance.registries.locatable.getLocatableBy(getAEKey(component)).asInstanceOf[IGridHost]
+    if (checkRange(component, sec))
+      sec
+    else
+      null
+  }
+
+  def checkRange(stack: ItemStack, sec: IGridHost): Boolean = {
+    if (sec == null) return false
+    val gridNode: IGridNode = sec.getGridNode(ForgeDirection.UNKNOWN)
+    if (gridNode == null) return false
+    val grid = gridNode.getGrid
+    if (grid == null) return false
+    stack.getItemDamage match {
+      case 0 =>
+        grid.getMachines(AEApi.instance.definitions.blocks.wireless.maybeEntity.get.asInstanceOf[Class[_ <: IGridHost]]).iterator.hasNext
+      case 1 =>
+        val gridBlock = gridNode.getGridBlock
+        if (gridBlock == null) return false
+        val loc = gridBlock.getLocation
+        if (loc == null) return false
+        for (node <- grid.getMachines(AEApi.instance.definitions.blocks.wireless.maybeEntity.get.asInstanceOf[Class[_ <: IGridHost]])) {
+          val accessPoint: IWirelessAccessPoint = node.getMachine.asInstanceOf[IWirelessAccessPoint]
+          val distance: WorldCoord = accessPoint.getLocation.subtract(agent.xPosition.toInt, agent.yPosition.toInt, agent.zPosition.toInt)
+          val squaredDistance: Int = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z
+          val range = accessPoint.getRange
+          if (squaredDistance <= range * range) return true
+        }
+        false
+      case _ =>
+        val gridBlock = gridNode.getGridBlock
+        if (gridBlock == null) return false
+        val loc = gridBlock.getLocation
+        if (loc == null) return false
+        for (node <- grid.getMachines(AEApi.instance.definitions.blocks.wireless.maybeEntity.get.asInstanceOf[Class[_ <: IGridHost]])) {
+          val accessPoint: IWirelessAccessPoint = node.getMachine.asInstanceOf[IWirelessAccessPoint]
+          val distance: WorldCoord = accessPoint.getLocation.subtract(agent.xPosition.toInt, agent.yPosition.toInt, agent.zPosition.toInt)
+          val squaredDistance: Int = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z
+          val range = accessPoint.getRange / 2
+          if (squaredDistance <= range * range) return true
+        }
+        false
+    }
+  }
+
+  def getAEKey(stack: ItemStack): Long = {
+    try {
+      return WirelessHandlerUpgradeAE.getEncryptionKey(stack).toLong
+    }
+    catch {
+      case _: Throwable =>
+    }
+    0L
   }
 
   override def update() {
@@ -302,11 +285,25 @@ class UpgradeAE(host: EnvironmentHost) extends ManagedEnvironment with appeng.Ne
     if (c == null)
       .0
     else
-      c.getItemDamage match{
-        case 0 => .6
-        case 1 => .3
-        case _ => .05
+      c.getItemDamage match {
+        case 0 =>.6
+        case 1 =>.3
+        case _ =>.05
       }
+  }
+
+  def getComponent: ItemStack = {
+    if (robot != null)
+      return robot.getStackInSlot(robot.componentSlot(node.address))
+    else if (drone != null) {
+      val i = drone.internalComponents.iterator
+      while (i.hasNext) {
+        val item = i.next
+        if (item != null && item.getItem == ItemOCUpgrade)
+          return item
+      }
+    }
+    null
   }
 
   override def onMessage(message: Message) {

@@ -99,7 +99,7 @@ public class PartFluidLevelEmitter extends PartECBase implements
 
     @Override
     public int isProvidingStrongPower() {
-        return isPowering() ? 15 : 0;
+        return isPowering() ? 15: 0;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class PartFluidLevelEmitter extends PartECBase implements
 
     public boolean onStackChangeAdv(IItemList o, IAEStack fullStack, IAEStack diffStack, BaseActionSource src, StorageChannel chan) {
         if (chan == StorageChannel.FLUIDS && diffStack != null && ((IAEFluidStack) diffStack).getFluid() == this.fluid) {
-            long newAmount = fullStack == null ? 0 : fullStack.getStackSize();
+            long newAmount = fullStack == null ? 0: fullStack.getStackSize();
             if (newAmount != this.currentAmount) {
                 this.currentAmount = newAmount;
 
@@ -215,7 +215,7 @@ public class PartFluidLevelEmitter extends PartECBase implements
         rh.setBounds(7, 7, 11, 9, 9, 14);
         rh.renderBlock(x, y, z, renderer);
         rh.setTexture(this.clientRedstoneOutput ? TextureManager.LEVEL_FRONT
-                .getTextures()[2] : TextureManager.LEVEL_FRONT.getTextures()[1]);
+                .getTextures()[2]: TextureManager.LEVEL_FRONT.getTextures()[1]);
         rh.setBounds(7, 7, 14, 9, 9, 16);
         rh.renderBlock(x, y, z, renderer);
     }

@@ -8,11 +8,11 @@ import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasHandler;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class LayerGasHandler extends LayerBase implements IGasHandler{
+public class LayerGasHandler extends LayerBase implements IGasHandler {
     @Override
     public int receiveGas(ForgeDirection side, GasStack stack, boolean doTransfer) {
         IPart part = this.getPart(side);
-        if(part instanceof IGasHandler){
+        if (part instanceof IGasHandler) {
             return ((IGasHandler) part).receiveGas(side, stack, doTransfer);
         }
         return 0;
@@ -21,7 +21,7 @@ public class LayerGasHandler extends LayerBase implements IGasHandler{
     @Override
     public int receiveGas(ForgeDirection side, GasStack stack) {
         IPart part = this.getPart(side);
-        if(part instanceof IGasHandler){
+        if (part instanceof IGasHandler) {
             return ((IGasHandler) part).receiveGas(side, stack, true);
         }
         return 0;
@@ -30,7 +30,7 @@ public class LayerGasHandler extends LayerBase implements IGasHandler{
     @Override
     public GasStack drawGas(ForgeDirection side, int amount, boolean doTransfer) {
         IPart part = this.getPart(side);
-        if(part instanceof IGasHandler){
+        if (part instanceof IGasHandler) {
             return ((IGasHandler) part).drawGas(side, amount, doTransfer);
         }
         return null;
@@ -39,7 +39,7 @@ public class LayerGasHandler extends LayerBase implements IGasHandler{
     @Override
     public GasStack drawGas(ForgeDirection side, int amount) {
         IPart part = this.getPart(side);
-        if(part instanceof IGasHandler){
+        if (part instanceof IGasHandler) {
             return ((IGasHandler) part).drawGas(side, amount, true);
         }
         return null;
@@ -48,7 +48,7 @@ public class LayerGasHandler extends LayerBase implements IGasHandler{
     @Override
     public boolean canReceiveGas(ForgeDirection side, Gas type) {
         IPart part = this.getPart(side);
-        if(part instanceof IGasHandler){
+        if (part instanceof IGasHandler) {
             return ((IGasHandler) part).canReceiveGas(side, type);
         }
         return false;
@@ -57,7 +57,7 @@ public class LayerGasHandler extends LayerBase implements IGasHandler{
     @Override
     public boolean canDrawGas(ForgeDirection side, Gas type) {
         IPart part = this.getPart(side);
-        if(part instanceof IGasHandler){
+        if (part instanceof IGasHandler) {
             return ((IGasHandler) part).canDrawGas(side, type);
         }
         return false;

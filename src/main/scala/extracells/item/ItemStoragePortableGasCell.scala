@@ -1,7 +1,5 @@
 package extracells.item
 
-import java.util
-
 import appeng.api.AEApi
 import appeng.api.config.{AccessRestriction, FuzzyMode}
 import appeng.api.storage.data.IAEFluidStack
@@ -19,11 +17,15 @@ import net.minecraft.util.{IIcon, StatCollector}
 import net.minecraft.world.World
 import net.minecraftforge.fluids.{Fluid, FluidRegistry}
 
+import java.util
+
 object ItemStoragePortableGasCell extends ItemECBase with IPortableGasStorageCell with PowerItem {
 
   override val MAX_POWER: Double = 20000
   private[item] var icon: IIcon = null
+
   def THIS = this
+
   setMaxStackSize(1)
   setMaxDamage(0)
 
@@ -57,7 +59,6 @@ object ItemStoragePortableGasCell extends ItemECBase with IPortableGasStorageCel
   override def getDurabilityForDisplay(itemStack: ItemStack): Double = 1 - getAECurrentPower(itemStack) / ItemStoragePortableFluidCell.MAX_POWER
 
 
-
   def getFilter(stack: ItemStack): util.ArrayList[Fluid] = {
     val inventory: ECFluidFilterInventory = new ECFluidFilterInventory("", 63, stack)
     val stacks: Array[ItemStack] = inventory.slots
@@ -84,7 +85,6 @@ object ItemStoragePortableGasCell extends ItemECBase with IPortableGasStorageCel
 
 
   def getMaxBytes(is: ItemStack): Int = 512
-
 
 
   def getMaxTypes(unused: ItemStack): Int = 3
@@ -120,7 +120,6 @@ object ItemStoragePortableGasCell extends ItemECBase with IPortableGasStorageCel
     ECApi.instance.openPortableGasCellGui(player, itemStack, world)
 
 
-
   @SideOnly(Side.CLIENT)
   override def registerIcons(iconRegister: IIconRegister) {
     this.icon = iconRegister.registerIcon("extracells:storage.gas.portable")
@@ -141,7 +140,7 @@ object ItemStoragePortableGasCell extends ItemECBase with IPortableGasStorageCel
     true
   }
 
-  override def getOreFilter(itemStack: ItemStack): String = ""
+   def getOreFilter(itemStack: ItemStack): String = ""
 
-  override def setOreFilter(itemStack: ItemStack, s: String): Unit = Unit
+   def setOreFilter(itemStack: ItemStack, s: String): Unit = Unit
 }

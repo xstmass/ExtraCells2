@@ -1,12 +1,11 @@
 package mekanism.api.reactor;
 
 
-public interface IReactorBlock
-{
-	public boolean isFrame();
+public interface IReactorBlock {
+    boolean isFrame();
 
-	public void setReactor(IFusionReactor reactor);
+    IFusionReactor getReactor();
 
-	public IFusionReactor getReactor();
+    void setReactor(IFusionReactor reactor);
 
 }

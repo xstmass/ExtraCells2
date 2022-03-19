@@ -1,6 +1,6 @@
 package extracells.part
 
 
-class PartGasLevelEmitter extends PartFluidLevelEmitter{
+class PartGasLevelEmitter extends PartFluidLevelEmitter {
 
 }

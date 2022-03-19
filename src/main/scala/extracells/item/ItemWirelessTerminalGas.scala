@@ -10,7 +10,9 @@ import net.minecraft.world.World
 
 object ItemWirelessTerminalGas extends Item with IWirelessGasTermHandler with WirelessTermBase {
   private[item] var icon: IIcon = null
+
   def THIS = this
+
   ECApi.instance.registerWirelessTermHandler(this)
 
   override def getIconFromDamage(dmg: Int): IIcon = this.icon

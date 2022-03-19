@@ -11,7 +11,7 @@ public class ContainerVibrationChamberFluid extends Container {
     public TileEntityVibrationChamberFluid tileentity;
 
     public ContainerVibrationChamberFluid(InventoryPlayer player,
-                                TileEntityVibrationChamberFluid tileentity) {
+                                          TileEntityVibrationChamberFluid tileentity) {
         this.tileentity = tileentity;
 
         bindPlayerInventory(player);
@@ -32,9 +32,7 @@ public class ContainerVibrationChamberFluid extends Container {
 
     @Override
     public boolean canInteractWith(EntityPlayer entityplayer) {
-        return tileentity.hasWorldObj() ?
-                tileentity.getWorldObj().getTileEntity(tileentity.xCoord, tileentity.yCoord, tileentity.zCoord) == this.tileentity :
-                false;
+        return tileentity.hasWorldObj() && tileentity.getWorldObj().getTileEntity(tileentity.xCoord, tileentity.yCoord, tileentity.zCoord) == this.tileentity;
     }
 
     @Override

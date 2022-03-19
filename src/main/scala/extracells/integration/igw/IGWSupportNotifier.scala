@@ -1,10 +1,5 @@
 package extracells.integration.igw
 
-import java.awt.Desktop
-import java.io.File
-import java.net.{URL, URLConnection}
-import java.util.List
-
 import cpw.mods.fml.client.FMLClientHandler
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
 import cpw.mods.fml.common.gameevent.TickEvent
@@ -17,10 +12,16 @@ import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.config.Configuration
 import org.apache.commons.io.FileUtils
 
+import java.awt.Desktop
+import java.io.File
+import java.net.{URL, URLConnection}
+import java.util.List
+
 /**
  * This class is meant to be copied to your own mod which implements IGW-Mod. When properly implemented by instantiating a new instance somewhere in your mod
  * loading stage, this will notify the player when it doesn't have IGW in the instance. It also needs to have the config option enabled to
  * notify the player. This config option will be generated in its own config file.
+ *
  * @author MineMaarten https://github.com/MineMaarten/IGW-mod
  */
 object IGWSupportNotifier {
@@ -66,12 +67,12 @@ object IGWSupportNotifier {
       return -100
     }
 
-    def getCommandName: String = {
-      return "igwmod_download"
-    }
-
     def getCommandUsage(p_71518_1_ : ICommandSender): String = {
       return getCommandName
+    }
+
+    def getCommandName: String = {
+      return "igwmod_download"
     }
 
     def processCommand(p_71515_1_ : ICommandSender, p_71515_2_ : Array[String]) {
@@ -82,8 +83,8 @@ object IGWSupportNotifier {
 
   private class ThreadDownloadIGW extends Thread {
 
-      setName("IGW-Mod Download Thread")
-      start
+    setName("IGW-Mod Download Thread")
+    start
 
 
     override def run {

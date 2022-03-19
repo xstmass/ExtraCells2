@@ -1,7 +1,5 @@
 package extracells.block
 
-import java.util.Random
-
 import appeng.api.AEApi
 import appeng.api.config.SecurityPermissions
 import appeng.api.implementations.items.IAEWrench
@@ -27,10 +25,14 @@ import net.minecraft.util.{IIcon, MathHelper}
 import net.minecraft.world.World
 import net.minecraftforge.common.util.ForgeDirection
 
+import java.util.Random
 
-object BlockHardMEDrive extends BlockEC(net.minecraft.block.material.Material.rock, 2.0F, 1000000.0F) with TGuiBlock{
+
+object BlockHardMEDrive extends BlockEC(net.minecraft.block.material.Material.rock, 2.0F, 1000000.0F) with TGuiBlock {
 
 
+  //Only needed because BlockEnum is in java. not in scala
+  val instance = this
   var frontIcon: IIcon = null
   var sideIcon: IIcon = null
   var bottomIcon: IIcon = null
@@ -59,12 +61,9 @@ object BlockHardMEDrive extends BlockEC(net.minecraft.block.material.Material.ro
     }
   }
 
-  //Only needed because BlockEnum is in java. not in scala
-  val instance = this
-
   setBlockName("block.hardmedrive");
 
-  override def createNewTileEntity(world : World, meta : Int): TileEntity = new TileEntityHardMeDrive()
+  override def createNewTileEntity(world: World, meta: Int): TileEntity = new TileEntityHardMeDrive()
 
   override def breakBlock(world: World, x: Int, y: Int, z: Int, block: Block, par6: Int) {
     dropItems(world, x, y, z)
@@ -135,46 +134,36 @@ object BlockHardMEDrive extends BlockEC(net.minecraft.block.material.Material.ro
     super.onBlockPlacedBy(world, x, y, z, entity, stack);
     val l = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 
-    if (!entity.isSneaking())
-    {
-      if (l == 0)
-      {
+    if (!entity.isSneaking()) {
+      if (l == 0) {
         world.setBlockMetadataWithNotify(x, y, z, 2, 2);
       }
 
-      if (l == 1)
-      {
+      if (l == 1) {
         world.setBlockMetadataWithNotify(x, y, z, 5, 2);
       }
 
-      if (l == 2)
-      {
+      if (l == 2) {
         world.setBlockMetadataWithNotify(x, y, z, 3, 2);
       }
 
-      if (l == 3)
-      {
+      if (l == 3) {
         world.setBlockMetadataWithNotify(x, y, z, 4, 2);
       }
-    } else
-    {
-      if (l == 0)
-      {
+    } else {
+      if (l == 0) {
         world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(2).getOpposite().ordinal(), 2);
       }
 
-      if (l == 1)
-      {
+      if (l == 1) {
         world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(5).getOpposite().ordinal(), 2);
       }
 
-      if (l == 2)
-      {
+      if (l == 2) {
         world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(3).getOpposite().ordinal(), 2);
       }
 
-      if (l == 3)
-      {
+      if (l == 3) {
         world.setBlockMetadataWithNotify(x, y, z, ForgeDirection.getOrientation(4).getOpposite().ordinal(), 2);
       }
     }
@@ -207,11 +196,11 @@ object BlockHardMEDrive extends BlockEC(net.minecraft.block.material.Material.ro
 
   @SideOnly(Side.CLIENT)
   override def getIcon(side: Int, metadata: Int) = {
-    if(side == metadata)
+    if (side == metadata)
       frontIcon
-    else if(side == 0)
+    else if (side == 0)
       bottomIcon
-    else if(side == 1)
+    else if (side == 1)
       topIcon
     else
       sideIcon
@@ -225,6 +214,6 @@ object BlockHardMEDrive extends BlockEC(net.minecraft.block.material.Material.ro
     topIcon = register.registerIcon("extracells:machine.top");
   }
 
-  override def getRenderType : Int = RendererHardMEDrive.getRenderId
+  override def getRenderType: Int = RendererHardMEDrive.getRenderId
 
 }

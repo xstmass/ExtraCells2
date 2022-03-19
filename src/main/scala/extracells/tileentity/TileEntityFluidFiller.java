@@ -54,7 +54,7 @@ public class TileEntityFluidFiller extends TileBase implements IActionHost,
     List<Fluid> fluids = new ArrayList<Fluid>();
     ItemStack returnStack = null;
     int ticksToFinish = 0;
-    private ECFluidGridBlock gridBlock;
+    private final ECFluidGridBlock gridBlock;
     private IGridNode node = null;
     private boolean isFirstGetGridNode = true;
 
@@ -353,7 +353,6 @@ public class TileEntityFluidFiller extends TileBase implements IActionHost,
             IStorageGrid storage = newGrid.getCache(IStorageGrid.class);
             if (storage != null)
                 storage.getFluidInventory().addListener(this, null);
-            ;
         }
     }
 

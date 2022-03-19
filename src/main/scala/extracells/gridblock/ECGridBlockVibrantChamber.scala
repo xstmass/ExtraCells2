@@ -1,15 +1,15 @@
 package extracells.gridblock
 
-import java.util.EnumSet
-
 import appeng.api.networking._
 import appeng.api.util.{AEColor, DimensionalCoord}
 import extracells.tileentity.TileEntityVibrationChamberFluid
 import net.minecraft.item.ItemStack
 import net.minecraftforge.common.util.ForgeDirection
 
+import java.util.EnumSet
 
-class ECGridBlockVibrantChamber(host: TileEntityVibrationChamberFluid) extends IGridBlock{
+
+class ECGridBlockVibrantChamber(host: TileEntityVibrationChamberFluid) extends IGridBlock {
   protected var grid: IGrid = null
   protected var usedChannels: Int = 0
 
@@ -23,8 +23,6 @@ class ECGridBlockVibrantChamber(host: TileEntityVibrationChamberFluid) extends I
 
   override def getIdlePowerUsage = host.getPowerUsage
 
-  override def getLocation: DimensionalCoord = host.getLocation
-
   override def getMachine: IGridHost = host
 
   override def getMachineRepresentation: ItemStack = {
@@ -32,6 +30,8 @@ class ECGridBlockVibrantChamber(host: TileEntityVibrationChamberFluid) extends I
     if (loc == null) return null
     new ItemStack(loc.getWorld.getBlock(loc.x, loc.y, loc.z), 1, loc.getWorld.getBlockMetadata(loc.x, loc.y, loc.z))
   }
+
+  override def getLocation: DimensionalCoord = host.getLocation
 
   override def gridChanged {}
 

@@ -19,23 +19,23 @@ object OCUtils {
     item.name == "drone"
   }
 
-  def getComponent(robot: RobotData, item: Item, meta: Int): ItemStack = {
-    for(component <- robot.components){
-      if(component != null && component.getItem == item) return component
-    }
-    null
-  }
-
   def getComponent(robot: RobotData, item: Item): ItemStack = getComponent(robot, item, 0)
 
-  def getComponent(drone: DroneData, item: Item, meta: Int): ItemStack = {
-    for(component <- drone.components){
-      if(component != null && component.getItem == item) return component
+  def getComponent(robot: RobotData, item: Item, meta: Int): ItemStack = {
+    for (component <- robot.components) {
+      if (component != null && component.getItem == item) return component
     }
     null
   }
 
   def getComponent(drone: DroneData, item: Item): ItemStack = getComponent(drone, item, 0)
+
+  def getComponent(drone: DroneData, item: Item, meta: Int): ItemStack = {
+    for (component <- drone.components) {
+      if (component != null && component.getItem == item) return component
+    }
+    null
+  }
 
 
 }

@@ -24,9 +24,8 @@ public class GasCellHandler implements ICellHandler {
 
     @Override
     public IMEInventoryHandler getCellInventory(ItemStack itemStack, ISaveProvider saveProvider, StorageChannel channel) {
-        if (channel == StorageChannel.ITEMS || !(itemStack.getItem() instanceof IGasStorageCell)) {
+        if (channel == StorageChannel.ITEMS || !(itemStack.getItem() instanceof IGasStorageCell))
             return null;
-        }
         return new HandlerItemStorageGas(itemStack, saveProvider, ((IGasStorageCell) itemStack.getItem()).getFilter(itemStack));
     }
 
@@ -36,17 +35,14 @@ public class GasCellHandler implements ICellHandler {
 
     @Override
     public int getStatusForCell(ItemStack is, IMEInventory handler) {
-        if (handler == null) {
+        if (handler == null)
             return 0;
-        }
 
         HandlerItemStorageGas inventory = (HandlerItemStorageGas) handler;
-        if (inventory.freeBytes() == 0) {
+        if (inventory.freeBytes() == 0)
             return 3;
-        }
-        if (inventory.isFormatted() || inventory.usedTypes() == inventory.totalTypes()) {
+        if (inventory.isFormatted() || inventory.usedTypes() == inventory.totalTypes())
             return 2;
-        }
 
         return 1;
     }
@@ -73,13 +69,11 @@ public class GasCellHandler implements ICellHandler {
 
     @Override
     public void openChestGui(EntityPlayer player, IChestOrDrive chest, ICellHandler cellHandler, IMEInventoryHandler inv, ItemStack is, StorageChannel chan) {
-        if (chan != StorageChannel.FLUIDS) {
+        if (chan != StorageChannel.FLUIDS)
             return;
-        }
         IStorageMonitorable monitorable = null;
-        if (chest != null) {
+        if (chest != null)
             monitorable = ((IMEChest) chest).getMonitorable(ForgeDirection.UNKNOWN, new PlayerSource(player, chest));
-        }
         if (monitorable != null) {
             // TODO gamerforEA code replace, old code:
             // GuiHandler.launchGui(GuiHandler.getGuiId(4), player, new Object[] { monitorable.getFluidInventory() });

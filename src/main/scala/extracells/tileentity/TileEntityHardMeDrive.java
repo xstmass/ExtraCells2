@@ -23,19 +23,19 @@ import net.minecraftforge.common.util.ForgeDirection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityHardMeDrive extends TileBase implements IActionHost, IECTileEntity, ICellContainer, IInventoryUpdateReceiver{
+public class TileEntityHardMeDrive extends TileBase implements IActionHost, IECTileEntity, ICellContainer, IInventoryUpdateReceiver {
 
-    private  int priority = 0;
+    private final ECGridBlockHardMEDrive gridBlock = new ECGridBlockHardMEDrive(this);
     boolean isFirstGridNode = true;
     byte[] cellStatuses = new byte[3];
     List<IMEInventoryHandler> fluidHandlers = new ArrayList<IMEInventoryHandler>();
     List<IMEInventoryHandler> itemHandlers = new ArrayList<IMEInventoryHandler>();
-    private final ECGridBlockHardMEDrive gridBlock = new ECGridBlockHardMEDrive(this);
-
-    private ECPrivateInventory inventory = new ECPrivateInventory(
+    IGridNode node = null;
+    private final int priority = 0;
+    private final ECPrivateInventory inventory = new ECPrivateInventory(
             "extracells.part.drive", 3, 1, this) {
 
-        ICellRegistry cellRegistry = AEApi.instance().registries().cell();
+        final ICellRegistry cellRegistry = AEApi.instance().registries().cell();
 
         @Override
         public boolean isItemValidForSlot(int i, ItemStack itemStack) {
@@ -43,12 +43,9 @@ public class TileEntityHardMeDrive extends TileBase implements IActionHost, IECT
         }
     };
 
-    public IInventory getInventory(){
+    public IInventory getInventory() {
         return inventory;
     }
-
-    IGridNode node = null;
-
 
     @Override
     public void blinkCell(int i) {
@@ -85,12 +82,12 @@ public class TileEntityHardMeDrive extends TileBase implements IActionHost, IECT
 
     @Override
     public IGridNode getGridNode(ForgeDirection forgeDirection) {
-        if (isFirstGridNode && hasWorldObj() && !getWorldObj().isRemote){
+        if (isFirstGridNode && hasWorldObj() && !getWorldObj().isRemote) {
             isFirstGridNode = false;
-            try{
+            try {
                 node = AEApi.instance().createGridNode(gridBlock);
                 node.updateState();
-            }catch (Exception e){
+            } catch (Exception e) {
                 isFirstGridNode = true;
             }
         }
@@ -114,8 +111,8 @@ public class TileEntityHardMeDrive extends TileBase implements IActionHost, IECT
     }
 
     //TODO
-    boolean isActive(){
-        return  true;
+    boolean isActive() {
+        return true;
     }
 
     public int getColorByStatus(int status) {
@@ -183,14 +180,14 @@ public class TileEntityHardMeDrive extends TileBase implements IActionHost, IECT
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag){
+    public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         inventory.readFromNBT(tag.getTagList("inventory", 10));
         onInventoryChanged();
     }
 
     @Override
-    public  void writeToNBT(NBTTagCompound tag){
+    public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         tag.setTag("inventory", inventory.writeToNBT());
     }

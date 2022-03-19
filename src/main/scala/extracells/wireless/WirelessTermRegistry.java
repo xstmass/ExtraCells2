@@ -8,32 +8,32 @@ import java.util.List;
 
 public class WirelessTermRegistry {
 
-	public static IWirelessGasFluidTermHandler getWirelessTermHandler(ItemStack is) {
-		if (is == null)
-			return null;
-		for (IWirelessGasFluidTermHandler handler : handlers) {
-			if (handler.canHandle(is))
-				return handler;
-		}
-		return null;
-	}
+    static List<IWirelessGasFluidTermHandler> handlers = new ArrayList<IWirelessGasFluidTermHandler>();
 
-	public static boolean isWirelessItem(ItemStack is) {
-		if (is == null)
-			return false;
-		for (IWirelessGasFluidTermHandler handler : handlers) {
-			if (handler.canHandle(is))
-				return true;
-		}
-		return false;
-	}
+    public static IWirelessGasFluidTermHandler getWirelessTermHandler(ItemStack is) {
+        if (is == null)
+            return null;
+        for (IWirelessGasFluidTermHandler handler : handlers) {
+            if (handler.canHandle(is))
+                return handler;
+        }
+        return null;
+    }
 
-	public static void registerWirelessTermHandler(
-			IWirelessGasFluidTermHandler handler) {
-		if (!handlers.contains(handler))
-			handlers.add(handler);
-	}
+    public static boolean isWirelessItem(ItemStack is) {
+        if (is == null)
+            return false;
+        for (IWirelessGasFluidTermHandler handler : handlers) {
+            if (handler.canHandle(is))
+                return true;
+        }
+        return false;
+    }
 
-	static List<IWirelessGasFluidTermHandler> handlers = new ArrayList<IWirelessGasFluidTermHandler>();
+    public static void registerWirelessTermHandler(
+            IWirelessGasFluidTermHandler handler) {
+        if (!handlers.contains(handler))
+            handlers.add(handler);
+    }
 
 }

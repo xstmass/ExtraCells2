@@ -1,5 +1,6 @@
 package extracells.container;
 
+import com.gamerforea.extracells.ModUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import extracells.gui.GuiFluidInterface;
@@ -12,45 +13,48 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.tileentity.TileEntity;
 
 public class ContainerOreDictExport extends Container {
-	public PartOreDictExporter part;
-	@SideOnly(Side.CLIENT)
-	public GuiFluidInterface gui;
-	EntityPlayer player;
+    public PartOreDictExporter part;
 
-	public ContainerOreDictExport(EntityPlayer player, PartOreDictExporter _part) {
-		this.player = player;
-		this.part = _part;
-		bindPlayerInventory(player.inventory);
-		TileEntity tile = this.part.getHostTile();
-		if (tile != null && tile.hasWorldObj() && !tile.getWorldObj().isRemote) {
-			new PacketOreDictExport(player, this.part.getFilter(), Side.CLIENT)
-					.sendPacketToPlayer(player);
-		}
-	}
+    // TODO gamerforEA code start
+    @SideOnly(Side.CLIENT)
+    // TODO gamerforEA code end
+    public GuiFluidInterface gui;
 
-	protected void bindPlayerInventory(IInventory inventoryPlayer) {
-		for (int i = 0; i < 3; ++i) {
-			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new Slot(inventoryPlayer,
-						j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-			}
-		}
+    EntityPlayer player;
 
-		for (int i = 0; i < 9; ++i) {
-			this.addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18,
-					142));
-		}
-	}
+    public ContainerOreDictExport(EntityPlayer player, PartOreDictExporter _part) {
+        this.player = player;
+        this.part = _part;
+        this.bindPlayerInventory(player.inventory);
+        TileEntity tile = this.part.getHostTile();
+        if (tile != null && tile.hasWorldObj() && !tile.getWorldObj().isRemote) {
+            new PacketOreDictExport(player, this.part.getFilter(), Side.CLIENT).sendPacketToPlayer(player);
+        }
+    }
 
-	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
-		return this.part.isValid();
-	}
+    protected void bindPlayerInventory(IInventory inventoryPlayer) {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
 
-	@Override
-	protected void retrySlotClick(int p_75133_1_, int p_75133_2_,
-			boolean p_75133_3_, EntityPlayer p_75133_4_) {
+        for (int i = 0; i < 9; ++i) {
+            this.addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 142));
+        }
+    }
 
-	}
+    @Override
+    public boolean canInteractWith(EntityPlayer player) {
+        // TODO gamerforEA code replace, old code:
+        // return true;
+        return ModUtils.isUseableByPlayer(this.part, player);
+        // TODO gamerforEA code end
+    }
+
+    @Override
+    protected void retrySlotClick(int p_75133_1_, int p_75133_2_, boolean p_75133_3_, EntityPlayer p_75133_4_) {
+
+    }
 
 }

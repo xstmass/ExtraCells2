@@ -1,7 +1,5 @@
 package extracells.item
 
-import java.util
-
 import appeng.api.AEApi
 import appeng.api.config.{AccessRestriction, FuzzyMode}
 import appeng.api.storage.data.IAEFluidStack
@@ -19,11 +17,15 @@ import net.minecraft.util.{IIcon, StatCollector}
 import net.minecraft.world.World
 import net.minecraftforge.fluids.{Fluid, FluidRegistry}
 
+import java.util
+
 object ItemStoragePortableFluidCell extends ItemECBase with IPortableFluidStorageCell with PowerItem {
 
   override val MAX_POWER: Double = 20000
   private[item] var icon: IIcon = null
+
   def THIS = this
+
   setMaxStackSize(1)
   setMaxDamage(0)
 
@@ -151,7 +153,7 @@ object ItemStoragePortableFluidCell extends ItemECBase with IPortableFluidStorag
     return true
   }
 
-  override def getOreFilter(itemStack: ItemStack): String = ""
+   def getOreFilter(itemStack: ItemStack): String = ""
 
-  override def setOreFilter(itemStack: ItemStack, s: String): Unit = Unit
+   def setOreFilter(itemStack: ItemStack, s: String): Unit = Unit
 }

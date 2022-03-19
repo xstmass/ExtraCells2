@@ -3,293 +3,253 @@ package mekanism.api.util;
 /**
  * Code taken from UE and modified to fit Mekanism.
  */
-public class UnitDisplayUtils
-{
-	public static enum ElectricUnit
-	{
-		JOULES("Joule", "J"),
-		REDSTONE_FLUX("Redstone Flux", "RF"),
-		MINECRAFT_JOULES("Minecraft Joule", "MJ"),
-		ELECTRICAL_UNITS("Electrical Unit", "EU");
+public class UnitDisplayUtils {
+    /**
+     * Displays the unit as text. Does handle negative numbers, and will place a negative sign in
+     * front of the output string showing this. Use string.replace to remove the negative sign if
+     * unwanted
+     */
+    public static String getDisplay(double value, ElectricUnit unit, int decimalPlaces, boolean isShort) {
+        String unitName = unit.name;
+        String prefix = "";
 
-		public String name;
-		public String symbol;
+        if (value < 0) {
+            value = Math.abs(value);
+            prefix = "-";
+        }
 
-		private ElectricUnit(String s, String s1)
-		{
-			name = s;
-			symbol = s1;
-		}
+        if (isShort) {
+            unitName = unit.symbol;
+        } else if (value > 1) {
+            unitName = unit.getPlural();
+        }
 
-		public String getPlural()
-		{
-			return this == REDSTONE_FLUX ? name : name + "s";
-		}
-	}
+        if (value == 0) {
+            return value + " " + unitName;
+        } else {
+            for (int i = 0; i < MeasurementUnit.values().length; i++) {
+                MeasurementUnit lowerMeasure = MeasurementUnit.values()[i];
 
-	public static enum TemperatureUnit
-	{
-		KELVIN("Kelvin", "K", 0, 1),
-		CELSIUS("Celsius", "°C", 273.15, 1),
-		RANKINE("Rankine", "R", 0, 9D/5D),
-		FAHRENHEIT("Fahrenheit", "°F", 459.67, 9D/5D),
-		AMBIENT("Ambient", "+STP", 300, 1);
+                if (lowerMeasure.below(value) && lowerMeasure.ordinal() == 0) {
+                    return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + " " + lowerMeasure.getName(isShort) + unitName;
+                }
 
-		public String name;
-		public String symbol;
-		double zeroOffset;
-		double intervalSize;
+                if (lowerMeasure.ordinal() + 1 >= MeasurementUnit.values().length) {
+                    return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + " " + lowerMeasure.getName(isShort) + unitName;
+                }
 
-		private TemperatureUnit(String s, String s1, double offset, double size)
-		{
-			name = s;
-			symbol = s1;
-			zeroOffset = offset;
-			intervalSize = size;
-		}
+                MeasurementUnit upperMeasure = MeasurementUnit.values()[i + 1];
 
-		public double convertFromK(double T)
-		{
-			return (T * intervalSize) - zeroOffset;
-		}
+                if ((lowerMeasure.above(value) && upperMeasure.below(value)) || lowerMeasure.value == value) {
+                    return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + " " + lowerMeasure.getName(isShort) + unitName;
+                }
+            }
+        }
 
-		public double convertToK(double T)
-		{
-			return (T + zeroOffset) / intervalSize;
-		}
-	}
+        return prefix + roundDecimals(value, decimalPlaces) + " " + unitName;
+    }
 
-	/** Metric system of measurement. */
-	public static enum MeasurementUnit
-	{
-		FEMTO("Femto", "f", 0.000000000000001D),
-		PICO("Pico", "p", 0.000000000001D),
-		NANO("Nano", "n", 0.000000001D),
-		MICRO("Micro", "u", 0.000001D),
-		MILLI("Milli", "m", 0.001D),
-		BASE("", "", 1),
-		KILO("Kilo", "k", 1000D),
-		MEGA("Mega", "M", 1000000D),
-		GIGA("Giga", "G", 1000000000D),
-		TERA("Tera", "T", 1000000000000D),
-		PETA("Peta", "P", 1000000000000000D),
-		EXA("Exa", "E", 1000000000000000000D),
-		ZETTA("Zetta", "Z", 1000000000000000000000D),
-		YOTTA("Yotta", "Y", 1000000000000000000000000D);
+    public static String getDisplayShort(double value, ElectricUnit unit) {
+        return getDisplay(value, unit, 2, true);
+    }
 
-		/** long name for the unit */
-		public String name;
+    public static String getDisplayShort(double value, ElectricUnit unit, int decimalPlaces) {
+        return getDisplay(value, unit, decimalPlaces, true);
+    }
 
-		/** short unit version of the unit */
-		public String symbol;
+    public static String getDisplaySimple(double value, ElectricUnit unit, int decimalPlaces) {
+        if (value > 1) {
+            if (decimalPlaces < 1) {
+                return (int) value + " " + unit.getPlural();
+            }
 
-		/** Point by which a number is consider to be of this unit */
-		public double value;
+            return roundDecimals(value, decimalPlaces) + " " + unit.getPlural();
+        }
 
-		private MeasurementUnit(String s, String s1, double v)
-		{
-			name = s;
-			symbol = s1;
-			value = v;
-		}
+        if (decimalPlaces < 1) {
+            return (int) value + " " + unit.name;
+        }
 
-		public String getName(boolean getShort)
-		{
-			if(getShort)
-			{
-				return symbol;
-			}
-			else {
-				return name;
-			}
-		}
+        return roundDecimals(value, decimalPlaces) + " " + unit.name;
+    }
 
-		public double process(double d)
-		{
-			return d / value;
-		}
+    public static String getDisplay(double T, TemperatureUnit unit, int decimalPlaces, boolean isShort) {
+        String unitName = unit.name;
+        String prefix = "";
 
-		public boolean above(double d)
-		{
-			return d > value;
-		}
+        double value = unit.convertFromK(T);
 
-		public boolean below(double d)
-		{
-			return d < value;
-		}
-	}
+        if (value < 0) {
+            value = Math.abs(value);
+            prefix = "-";
+        }
 
-	/**
-	 * Displays the unit as text. Does handle negative numbers, and will place a negative sign in
-	 * front of the output string showing this. Use string.replace to remove the negative sign if
-	 * unwanted
-	 */
-	public static String getDisplay(double value, ElectricUnit unit, int decimalPlaces, boolean isShort)
-	{
-		String unitName = unit.name;
-		String prefix = "";
+        if (isShort) {
+            unitName = unit.symbol;
+        }
 
-		if(value < 0)
-		{
-			value = Math.abs(value);
-			prefix = "-";
-		}
+        if (value == 0) {
+            return value + (isShort ? "": " ") + unitName;
+        } else {
+            for (int i = 0; i < MeasurementUnit.values().length; i++) {
+                MeasurementUnit lowerMeasure = MeasurementUnit.values()[i];
 
-		if(isShort)
-		{
-			unitName = unit.symbol;
-		}
-		else if(value > 1)
-		{
-			unitName = unit.getPlural();
-		}
+                if (lowerMeasure.below(value) && lowerMeasure.ordinal() == 0) {
+                    return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + (isShort ? "": " ") + lowerMeasure.getName(isShort) + unitName;
+                }
 
-		if(value == 0)
-		{
-			return value + " " + unitName;
-		}
-		else {
-			for(int i = 0; i < MeasurementUnit.values().length; i++)
-			{
-				MeasurementUnit lowerMeasure = MeasurementUnit.values()[i];
+                if (lowerMeasure.ordinal() + 1 >= MeasurementUnit.values().length) {
+                    return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + (isShort ? "": " ") + lowerMeasure.getName(isShort) + unitName;
+                }
 
-				if(lowerMeasure.below(value) && lowerMeasure.ordinal() == 0)
-				{
-					return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + " " + lowerMeasure.getName(isShort) + unitName;
-				}
+                MeasurementUnit upperMeasure = MeasurementUnit.values()[i + 1];
 
-				if(lowerMeasure.ordinal() + 1 >= MeasurementUnit.values().length)
-				{
-					return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + " " + lowerMeasure.getName(isShort) + unitName;
-				}
+                if ((lowerMeasure.above(value) && upperMeasure.below(value)) || lowerMeasure.value == value) {
+                    return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + (isShort ? "": " ") + lowerMeasure.getName(isShort) + unitName;
+                }
+            }
+        }
 
-				MeasurementUnit upperMeasure = MeasurementUnit.values()[i + 1];
+        return prefix + roundDecimals(value, decimalPlaces) + (isShort ? "": " ") + unitName;
+    }
 
-				if((lowerMeasure.above(value) && upperMeasure.below(value)) || lowerMeasure.value == value)
-				{
-					return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + " " + lowerMeasure.getName(isShort) + unitName;
-				}
-			}
-		}
+    public static String getDisplayShort(double value, TemperatureUnit unit) {
+        return getDisplay(value, unit, 2, true);
+    }
 
-		return prefix + roundDecimals(value, decimalPlaces) + " " + unitName;
-	}
+    public static String getDisplayShort(double value, TemperatureUnit unit, int decimalPlaces) {
+        return getDisplay(value, unit, decimalPlaces, true);
+    }
 
-	public static String getDisplayShort(double value, ElectricUnit unit)
-	{
-		return getDisplay(value, unit, 2, true);
-	}
+    public static double roundDecimals(double d, int decimalPlaces) {
+        int j = (int) (d * Math.pow(10, decimalPlaces));
+        return j / Math.pow(10, decimalPlaces);
+    }
 
-	public static String getDisplayShort(double value, ElectricUnit unit, int decimalPlaces)
-	{
-		return getDisplay(value, unit, decimalPlaces, true);
-	}
+    public static double roundDecimals(double d) {
+        return roundDecimals(d, 2);
+    }
 
-	public static String getDisplaySimple(double value, ElectricUnit unit, int decimalPlaces)
-	{
-		if(value > 1)
-		{
-			if(decimalPlaces < 1)
-			{
-				return (int)value + " " + unit.getPlural();
-			}
+    public enum ElectricUnit {
+        JOULES("Joule", "J"),
+        REDSTONE_FLUX("Redstone Flux", "RF"),
+        MINECRAFT_JOULES("Minecraft Joule", "MJ"),
+        ELECTRICAL_UNITS("Electrical Unit", "EU");
 
-			return roundDecimals(value, decimalPlaces) + " " + unit.getPlural();
-		}
+        public String name;
+        public String symbol;
 
-		if(decimalPlaces < 1)
-		{
-			return (int)value + " " + unit.name;
-		}
+        ElectricUnit(String s, String s1) {
+            name = s;
+            symbol = s1;
+        }
 
-		return roundDecimals(value, decimalPlaces) + " " + unit.name;
-	}
+        public String getPlural() {
+            return this == REDSTONE_FLUX ? name: name + "s";
+        }
+    }
 
-	public static String getDisplay(double T, TemperatureUnit unit, int decimalPlaces, boolean isShort)
-	{
-		String unitName = unit.name;
-		String prefix = "";
+    public enum TemperatureUnit {
+        KELVIN("Kelvin", "K", 0, 1),
+        CELSIUS("Celsius", "°C", 273.15, 1),
+        RANKINE("Rankine", "R", 0, 9D / 5D),
+        FAHRENHEIT("Fahrenheit", "°F", 459.67, 9D / 5D),
+        AMBIENT("Ambient", "+STP", 300, 1);
 
-		double value = unit.convertFromK(T);
+        public String name;
+        public String symbol;
+        double zeroOffset;
+        double intervalSize;
 
-		if(value < 0)
-		{
-			value = Math.abs(value);
-			prefix = "-";
-		}
+        TemperatureUnit(String s, String s1, double offset, double size) {
+            name = s;
+            symbol = s1;
+            zeroOffset = offset;
+            intervalSize = size;
+        }
 
-		if(isShort)
-		{
-			unitName = unit.symbol;
-		}
+        public double convertFromK(double T) {
+            return (T * intervalSize) - zeroOffset;
+        }
 
-		if(value == 0)
-		{
-			return value + (isShort ? "" : " ") + unitName;
-		}
-		else {
-			for(int i = 0; i < MeasurementUnit.values().length; i++)
-			{
-				MeasurementUnit lowerMeasure = MeasurementUnit.values()[i];
+        public double convertToK(double T) {
+            return (T + zeroOffset) / intervalSize;
+        }
+    }
 
-				if(lowerMeasure.below(value) && lowerMeasure.ordinal() == 0)
-				{
-					return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + (isShort ? "" : " ") + lowerMeasure.getName(isShort) + unitName;
-				}
+    /**
+     * Metric system of measurement.
+     */
+    public enum MeasurementUnit {
+        FEMTO("Femto", "f", 0.000000000000001D),
+        PICO("Pico", "p", 0.000000000001D),
+        NANO("Nano", "n", 0.000000001D),
+        MICRO("Micro", "u", 0.000001D),
+        MILLI("Milli", "m", 0.001D),
+        BASE("", "", 1),
+        KILO("Kilo", "k", 1000D),
+        MEGA("Mega", "M", 1000000D),
+        GIGA("Giga", "G", 1000000000D),
+        TERA("Tera", "T", 1000000000000D),
+        PETA("Peta", "P", 1000000000000000D),
+        EXA("Exa", "E", 1000000000000000000D),
+        ZETTA("Zetta", "Z", 1000000000000000000000D),
+        YOTTA("Yotta", "Y", 1000000000000000000000000D);
 
-				if(lowerMeasure.ordinal() + 1 >= MeasurementUnit.values().length)
-				{
-					return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + (isShort ? "" : " ") + lowerMeasure.getName(isShort) + unitName;
-				}
+        /**
+         * long name for the unit
+         */
+        public String name;
 
-				MeasurementUnit upperMeasure = MeasurementUnit.values()[i + 1];
+        /**
+         * short unit version of the unit
+         */
+        public String symbol;
 
-				if((lowerMeasure.above(value) && upperMeasure.below(value)) || lowerMeasure.value == value)
-				{
-					return prefix + roundDecimals(lowerMeasure.process(value), decimalPlaces) + (isShort ? "" : " ") + lowerMeasure.getName(isShort) + unitName;
-				}
-			}
-		}
+        /**
+         * Point by which a number is consider to be of this unit
+         */
+        public double value;
 
-		return prefix + roundDecimals(value, decimalPlaces) + (isShort ? "" : " ") + unitName;
-	}
+        MeasurementUnit(String s, String s1, double v) {
+            name = s;
+            symbol = s1;
+            value = v;
+        }
 
-	public static String getDisplayShort(double value, TemperatureUnit unit)
-	{
-		return getDisplay(value, unit, 2, true);
-	}
+        public String getName(boolean getShort) {
+            if (getShort) {
+                return symbol;
+            } else {
+                return name;
+            }
+        }
 
-	public static String getDisplayShort(double value, TemperatureUnit unit, int decimalPlaces)
-	{
-		return getDisplay(value, unit, decimalPlaces, true);
-	}
+        public double process(double d) {
+            return d / value;
+        }
 
-	public static double roundDecimals(double d, int decimalPlaces)
-	{
-		int j = (int)(d*Math.pow(10, decimalPlaces));
-		return j/Math.pow(10, decimalPlaces);
-	}
+        public boolean above(double d) {
+            return d > value;
+        }
 
-	public static double roundDecimals(double d)
-	{
-		return roundDecimals(d, 2);
-	}
+        public boolean below(double d) {
+            return d < value;
+        }
+    }
 
-	public static enum EnergyType
-	{
-		J,
-		RF,
-		EU,
-		MJ
-	}
+    public enum EnergyType {
+        J,
+        RF,
+        EU,
+        MJ
+    }
 
-	public static enum TempType
-	{
-		K,
-		C,
-		R,
-		F,
-		STP
-	}
+    public enum TempType {
+        K,
+        C,
+        R,
+        F,
+        STP
+    }
 }

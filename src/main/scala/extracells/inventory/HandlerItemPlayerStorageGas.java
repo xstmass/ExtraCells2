@@ -10,7 +10,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 
-public class HandlerItemPlayerStorageGas extends HandlerItemStorageGas{
+public class HandlerItemPlayerStorageGas extends HandlerItemStorageGas {
 
     private final EntityPlayer player;
 
@@ -20,7 +20,7 @@ public class HandlerItemPlayerStorageGas extends HandlerItemStorageGas{
     }
 
     public HandlerItemPlayerStorageGas(ItemStack _storageStack,
-                                         ISaveProvider _saveProvider, EntityPlayer _player) {
+                                       ISaveProvider _saveProvider, EntityPlayer _player) {
         super(_storageStack, _saveProvider);
         this.player = _player;
     }
