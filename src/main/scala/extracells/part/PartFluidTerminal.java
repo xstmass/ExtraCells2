@@ -65,7 +65,7 @@ public class PartFluidTerminal extends PartECBase implements IGridTickable, IInv
             drops.add(stack);
         }
     }
-
+/*
     @Override
     public ItemStack getItemStack(PartItemStack type) {
         ItemStack stack = super.getItemStack(type);
@@ -75,7 +75,7 @@ public class PartFluidTerminal extends PartECBase implements IGridTickable, IInv
             }
         }
         return stack;
-    }
+    }*/
 
     public void addContainer(ContainerFluidTerminal containerTerminalFluid) {
         this.containers.add(containerTerminalFluid);
